@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  emailVerified Boolean       @default(false)
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  role          Role          @default(PLAYER)
+  accounts      Account[]
+  sentInvites   Invite[]      @relation("Inviter")
+  peladas       Pelada[]      @relation("PeladaCreator")
+  stats         PlayerStats[]
+  sessions      Session[]
+  draws         Draw[]        @relation("DrawCreator")
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, value])
+  @@map("verification")
+}
+
+model Pelada {
+  id          String        @id @default(cuid())
+  name        String
+  type        PeladaType
+  date        DateTime
+  createdById String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  invites     Invite[]
+  createdBy   User          @relation("PeladaCreator", fields: [createdById], references: [id])
+  players     PlayerStats[]
+  draws       Draw[]
+
+  @@map("pelada")
+}
+
+model PlayerStats {
+  id                 String       @id @default(cuid())
+  userId             String?
+  peladaId           String
+  rating             Float        @default(5.0)
+  goals              Int          @default(0)
+  assists            Int          @default(0)
+  position           Position?
+  inviteExpiresAt    DateTime?
+  inviteToken        String?      @unique
+  invitedPlayerEmail String?
+  invitedPlayerName  String?
+  isActive           Boolean      @default(true)
+  isInvited          Boolean      @default(false)
+  pelada             Pelada       @relation(fields: [peladaId], references: [id])
+  user               User?        @relation(fields: [userId], references: [id])
+  teamPlayers        TeamPlayer[]
+
+  @@unique([userId, peladaId])
+  @@map("player_stats")
+}
+
+model Invite {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  email     String
+  name      String
+  peladaId  String
+  invitedBy String
+  expiresAt DateTime
+  used      Boolean   @default(false)
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  inviter   User      @relation("Inviter", fields: [invitedBy], references: [id])
+  pelada    Pelada    @relation(fields: [peladaId], references: [id])
+
+  @@map("invites")
+}
+
+model Draw {
+  id             String     @id @default(cuid())
+  peladaId       String
+  createdById    String
+  method         DrawMethod @default(AUTO_BALANCED)
+  numberOfTeams  Int
+  playersPerTeam Int
+  isActive       Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  pelada    Pelada @relation(fields: [peladaId], references: [id], onDelete: Cascade)
+  createdBy User   @relation("DrawCreator", fields: [createdById], references: [id])
+  teams     Team[]
+
+  @@map("draw")
+}
+
+model Team {
+  id            String       @id @default(cuid())
+  drawId        String
+  name          String
+  color         String
+  averageRating Float        @default(0)
+
+  draw    Draw         @relation(fields: [drawId], references: [id], onDelete: Cascade)
+  players TeamPlayer[]
+
+  @@map("team")
+}
+
+model TeamPlayer {
+  id            String   @id @default(cuid())
+  teamId        String
+  playerStatsId String
+  position      Position?
+
+  team        Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  playerStats PlayerStats @relation(fields: [playerStatsId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, playerStatsId])
+  @@map("team_player")
+}
+
+enum PeladaType {
+  RECORRENTE
+  UNICA
+}
+
+enum Role {
+  ADMIN
+  PRESIDENT
+  PLAYER
+}
+
+enum DrawMethod {
+  MANUAL
+  AUTO_RANDOM
+  AUTO_BALANCED
+}
+
+enum Position {
+  GOLEIRO
+  ZAGUEIRO
+  MEIO
+  ATACANTE
+}
