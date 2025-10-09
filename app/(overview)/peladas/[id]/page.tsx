@@ -123,7 +123,7 @@ export default function PeladaDetailPage() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center space-y-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
                     <p className="text-lg text-gray-600 font-medium">Carregando pelada...</p>
                 </div>
             </div>
@@ -144,7 +144,7 @@ export default function PeladaDetailPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button asChild className="w-full bg-green-600 hover:bg-green-700">
+                        <Button asChild className="w-full bg-emerald-600 hover:bg-emerald-700">
                             <Link href="/login">Fazer Login</Link>
                         </Button>
                     </CardContent>
@@ -155,7 +155,7 @@ export default function PeladaDetailPage() {
 
     if (!pelada) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 p-4">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-blue-50 p-4">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center">
                         <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -167,7 +167,7 @@ export default function PeladaDetailPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button asChild className="w-full bg-green-600 hover:bg-green-700">
+                        <Button asChild className="w-full bg-emerald-600 hover:bg-emerald-700">
                             <Link href="/peladas">
                                 <ArrowLeft className="w-4 h-4 mr-2" />
                                 Voltar às Peladas
@@ -328,7 +328,7 @@ export default function PeladaDetailPage() {
 
     return (
         <>
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className="px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                         <div>
@@ -342,7 +342,7 @@ export default function PeladaDetailPage() {
                                     variant={pelada.type === 'RECORRENTE' ? 'default' : 'secondary'}
                                     className={pelada.type === 'RECORRENTE'
                                         ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                                        : 'bg-green-100 text-green-800 hover:bg-green-200'
+                                        : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
                                     }
                                 >
                                     {pelada.type}
@@ -427,7 +427,7 @@ export default function PeladaDetailPage() {
                                     </div>
                                     <Button
                                         onClick={() => setShowAddPlayer(!showAddPlayer)}
-                                        className="bg-green-600 hover:bg-green-700"
+                                        className="bg-emerald-600 hover:bg-emerald-700"
                                     >
                                         <Plus className="w-4 h-4 mr-2" />
                                         Adicionar
@@ -437,7 +437,7 @@ export default function PeladaDetailPage() {
 
                             <CardContent className="space-y-4">
                                 {showAddPlayer && (
-                                    <Card className="bg-green-50 border-green-200">
+                                    <Card className="bg-emerald-50 border-emerald-200">
                                         <CardHeader>
                                             <div className="flex items-center justify-between">
                                                 <CardTitle className="text-lg">Novo Jogador</CardTitle>
@@ -493,7 +493,7 @@ export default function PeladaDetailPage() {
                                             <div className="flex gap-2">
                                                 <Button
                                                     onClick={handleAddPlayer}
-                                                    className="flex-1 bg-green-600 hover:bg-green-700"
+                                                    className="flex-1 bg-emerald-600 hover:bg-emerald-700"
                                                 >
                                                     <UserPlus className="w-4 h-4 mr-2" />
                                                     Adicionar Jogador
@@ -511,7 +511,7 @@ export default function PeladaDetailPage() {
 
                                 {loadingPlayers ? (
                                     <div className="text-center py-12">
-                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
                                         <p className="text-gray-600">Carregando jogadores...</p>
                                     </div>
                                 ) : confirmedPlayers.length === 0 ? (
@@ -545,7 +545,7 @@ export default function PeladaDetailPage() {
                                                     <TableRow key={player.id} className="hover:bg-gray-50">
                                                         <TableCell>
                                                             <div className="flex items-center gap-3">
-                                                                <Avatar className="h-10 w-10 bg-gradient-to-br from-green-400 to-green-600">
+                                                                <Avatar className="h-10 w-10 bg-gradient-to-br from-emerald-400 to-emerald-600">
                                                                     <AvatarFallback className="bg-transparent text-white font-semibold text-sm">
                                                                         {getInitials(player.user ? player.user.name : player.invitedPlayerName || "?")}
                                                                     </AvatarFallback>
@@ -588,7 +588,7 @@ export default function PeladaDetailPage() {
                                                         </TableCell>
                                                         <TableCell className="text-center">
                                                             {player.isActive ? (
-                                                                <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Sim</Badge>
+                                                                <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-300">Sim</Badge>
                                                             ) : (
                                                                 <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300">Não</Badge>
                                                             )}
@@ -767,7 +767,7 @@ export default function PeladaDetailPage() {
                                 <Separator />
                                 <div className="flex items-center justify-between">
                                     <span className="text-gray-600">Confirmados</span>
-                                    <span className="font-semibold text-green-600">{confirmedPlayers.length}</span>
+                                    <span className="font-semibold text-emerald-600">{confirmedPlayers.length}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-gray-600">Pendentes</span>
@@ -910,7 +910,7 @@ export default function PeladaDetailPage() {
                         }}>
                             Cancelar
                         </Button>
-                        <Button onClick={handleSaveEdit} className="bg-green-600 hover:bg-green-700">
+                        <Button onClick={handleSaveEdit} className="bg-emerald-600 hover:bg-emerald-700">
                             <Pencil className="w-4 h-4 mr-2" />
                             Salvar Alterações
                         </Button>

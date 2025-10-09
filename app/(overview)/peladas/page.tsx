@@ -41,7 +41,7 @@ export default function PeladasPage() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center space-y-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
                     <p className="text-lg text-gray-600 font-medium">Carregando peladas...</p>
                 </div>
             </div>
@@ -62,7 +62,7 @@ export default function PeladasPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button asChild className="w-full bg-green-600 hover:bg-green-700">
+                        <Button asChild className="w-full bg-emerald-600 hover:bg-emerald-700">
                             <Link href="/login">Fazer Login</Link>
                         </Button>
                     </CardContent>
@@ -90,8 +90,7 @@ export default function PeladasPage() {
 
     return (
         <div className="min-h-full">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Page Header */}
+            <div className="px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
@@ -101,7 +100,7 @@ export default function PeladasPage() {
                             </p>
                         </div>
                         {canCreatePelada() && peladas.length > 0 && (
-                            <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
+                            <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                                 <Link href="/peladas/nova">
                                     <Plus className="w-5 h-5 mr-2" />
                                     Nova Pelada
@@ -148,7 +147,7 @@ export default function PeladasPage() {
                                     }
                                 </p>
                                 {canCreatePelada() && (
-                                    <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
+                                    <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                                         <Link href="/peladas/nova">
                                             <Plus className="w-5 h-5 mr-2" />
                                             Criar Primeira Pelada
@@ -167,7 +166,7 @@ export default function PeladasPage() {
                                                     variant={pelada.type === 'RECORRENTE' ? 'default' : 'secondary'}
                                                     className={pelada.type === 'RECORRENTE'
                                                         ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                                                        : 'bg-green-100 text-green-800 hover:bg-green-200'
+                                                        : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
                                                     }
                                                 >
                                                     {pelada.type}
@@ -280,9 +279,6 @@ export default function PeladasPage() {
                     </div>
                 )}
 
-                <div className="text-center text-sm text-muted-foreground mt-4">
-                    Mostrando {peladas.length} de {pagination.total} peladas
-                </div>
             </div>
 
             {/* Delete Confirmation Dialog */}

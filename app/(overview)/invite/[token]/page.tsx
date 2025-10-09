@@ -101,7 +101,7 @@ export default function AcceptInvitePage() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
                     <div className="text-lg text-gray-600">Carregando convite...</div>
                 </div>
             </div>
@@ -119,7 +119,7 @@ export default function AcceptInvitePage() {
                     <p className="text-gray-600 mb-6">{error}</p>
                     <button
                         onClick={() => router.push("/")}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
                     >
                         Ir para o Início
                     </button>
@@ -130,10 +130,10 @@ export default function AcceptInvitePage() {
 
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-blue-50">
                 <div className="text-center">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle className="w-8 h-8 text-green-600" />
+                    <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle className="w-8 h-8 text-emerald-600" />
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900 mb-4">Conta Criada com Sucesso!</h1>
                     <p className="text-gray-600 mb-6">
@@ -148,12 +148,12 @@ export default function AcceptInvitePage() {
     if (!invite) return null
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50 flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 <div className="bg-white rounded-2xl shadow-xl p-8">
                     <div className="text-center mb-8">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Trophy className="w-8 h-8 text-green-600" />
+                        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Trophy className="w-8 h-8 text-emerald-600" />
                         </div>
                         <h1 className="text-2xl font-bold text-gray-900">Você foi convidado!</h1>
                         <p className="text-gray-600 mt-2">
@@ -198,7 +198,7 @@ export default function AcceptInvitePage() {
                                 id="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                                 placeholder="Digite sua senha"
                                 required
                             />
@@ -214,7 +214,7 @@ export default function AcceptInvitePage() {
                                 id="confirmPassword"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                                 placeholder="Confirme sua senha"
                                 required
                             />
@@ -229,7 +229,7 @@ export default function AcceptInvitePage() {
                         <button
                             type="submit"
                             disabled={accepting}
-                            className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                            className="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                         >
                             {accepting ? "Criando Conta..." : "Aceitar Convite e Criar Conta"}
                         </button>

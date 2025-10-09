@@ -42,7 +42,7 @@ export default function EditarPeladaPage() {
         return (
             <div className="h-full flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
                     <div className="text-lg text-gray-600">Carregando...</div>
                 </div>
             </div>
@@ -57,7 +57,7 @@ export default function EditarPeladaPage() {
                     <p className="text-gray-600 mb-4">Você precisa estar logado para acessar esta página.</p>
                     <Link
                         href="/login"
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
                     >
                         Fazer Login
                     </Link>
@@ -74,7 +74,7 @@ export default function EditarPeladaPage() {
                     <p className="text-gray-600 mb-4">Você não tem permissão para editar peladas.</p>
                     <Link
                         href="/peladas"
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
                     >
                         Voltar às Peladas
                     </Link>
@@ -90,7 +90,7 @@ export default function EditarPeladaPage() {
                     <h1 className="text-2xl font-bold text-gray-900 mb-4">Pelada não encontrada</h1>
                     <Link
                         href="/peladas"
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
                     >
                         Voltar às Peladas
                     </Link>
@@ -136,7 +136,7 @@ export default function EditarPeladaPage() {
                                 id="name"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 h-9"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 h-9"
                                 required
                             />
                         </div>
@@ -167,7 +167,7 @@ export default function EditarPeladaPage() {
                                 type="datetime-local"
                                 value={formData.date}
                                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                                 required
                             />
                         </div>
@@ -176,7 +176,7 @@ export default function EditarPeladaPage() {
                             <Button
                                 type="submit"
                                 disabled={saving}
-                                className="flex-1 h-9 border bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+                                className="flex-1 h-9 border bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
                             >
                                 <Save className="w-4 h-4" />
                                 {saving ? "Salvando..." : "Salvar Alterações"}

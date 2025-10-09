@@ -28,7 +28,7 @@ export default function Home() {
         return (
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="max-w-lg w-full">
-                    <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-10 text-center border border-white/20">
+                    <div className="rounded-3xl shadow-2xl p-10 text-center border border-white/20">
                         <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/30">
                             <Trophy className="w-10 h-10 text-white" />
                         </div>
@@ -52,7 +52,7 @@ export default function Home() {
     }
 
     return (
-        <div className="min-h-full bg-gradient-to-br from-gray-50 via-blue-50/30 to-emerald-50/30">
+        <div className="min-h-full">
             <div className="px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -222,93 +222,56 @@ export default function Home() {
                                                 </div>
                                             </div>
                                         ))}
-                                        <div className="pt-4 border-t border-gray-200">
-                                            <Link
-                                                href="/peladas"
-                                                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl transition-colors font-medium text-center inline-block"
-                                            >
-                                                Ver Todas as Peladas
-                                            </Link>
-                                        </div>
+
+                                        {stats.peladasRecentes.length > 3 && (
+                                            <div className="pt-4 border-t border-gray-200">
+                                                <Link
+                                                    href="/peladas"
+                                                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl transition-colors font-medium text-center inline-block"
+                                                >
+                                                    Ver Todas as Peladas
+                                                </Link>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    <div className="space-y-6">
-                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                            <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <User className="w-5 h-5 text-gray-600" />
-                                Perfil
-                            </h4>
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                                        {session.user.name.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-gray-900 truncate">{session.user.name}</p>
-                                        <p className="text-xs text-gray-500 truncate">{session.user.email}</p>
-                                    </div>
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 text-gray-600" />
+                            Ações Rápidas
+                        </h4>
+                        <div className="space-y-2">
+                            <Link
+                                href="/peladas"
+                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 transition-colors group"
+                            >
+                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                                    <Calendar className="w-5 h-5 text-blue-600" />
                                 </div>
-
-                                <div className="pt-3 border-t border-gray-100">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm text-gray-600">Função</span>
-                                        <span className={`px-3 py-1 text-xs font-bold rounded-full ${role === 'ADMIN' ? 'bg-gradient-to-r from-red-500 to-red-600 text-white' :
-                                            role === 'PRESIDENT' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
-                                                'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white'
-                                            }`}>
-                                            {role}
-                                        </span>
-                                    </div>
+                                <span className="text-sm font-medium text-gray-700">Ver Todas as Peladas</span>
+                            </Link>
+                            <Link
+                                href="/estatisticas"
+                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50 transition-colors group"
+                            >
+                                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                    <Trophy className="w-5 h-5 text-emerald-600" />
                                 </div>
-
-                                <Link
-                                    href="/perfil"
-                                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors font-medium"
-                                >
-                                    <Settings className="w-4 h-4" />
-                                    Editar Perfil
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                            <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <TrendingUp className="w-5 h-5 text-gray-600" />
-                                Ações Rápidas
-                            </h4>
-                            <div className="space-y-2">
-                                <Link
-                                    href="/peladas"
-                                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 transition-colors group"
-                                >
-                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                        <Calendar className="w-5 h-5 text-blue-600" />
-                                    </div>
-                                    <span className="text-sm font-medium text-gray-700">Ver Todas as Peladas</span>
-                                </Link>
-                                <Link
-                                    href="/estatisticas"
-                                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50 transition-colors group"
-                                >
-                                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
-                                        <Trophy className="w-5 h-5 text-emerald-600" />
-                                    </div>
-                                    <span className="text-sm font-medium text-gray-700">Minhas Estatísticas</span>
-                                </Link>
-                                <Link
-                                    href="/jogadores"
-                                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-purple-50 transition-colors group"
-                                >
-                                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                                        <Users className="w-5 h-5 text-purple-600" />
-                                    </div>
-                                    <span className="text-sm font-medium text-gray-700">Buscar Jogadores</span>
-                                </Link>
-                            </div>
+                                <span className="text-sm font-medium text-gray-700">Minhas Estatísticas</span>
+                            </Link>
+                            <Link
+                                href="/jogadores"
+                                className="flex items-center gap-3 p-3 rounded-xl hover:bg-purple-50 transition-colors group"
+                            >
+                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                                    <Users className="w-5 h-5 text-purple-600" />
+                                </div>
+                                <span className="text-sm font-medium text-gray-700">Buscar Jogadores</span>
+                            </Link>
                         </div>
                     </div>
                 </div>
