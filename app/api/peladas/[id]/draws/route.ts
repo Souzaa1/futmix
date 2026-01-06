@@ -254,7 +254,7 @@ export async function POST(
         if (method === "MANUAL" && manualTeams) {
             teamsData = manualTeams.map((team: any) =>
                 team.players.map((p: any) =>
-                    activePlayers.find(ap => ap.id === p.playerStatsId)
+                    activePlayers.find((ap: any) => ap.id === p.playerStatsId)
                 ).filter(Boolean)
             );
         } else if (method === "AUTO_BALANCED") {
