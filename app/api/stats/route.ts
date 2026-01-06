@@ -65,13 +65,13 @@ export async function GET(request: NextRequest) {
         );
 
         const totalPeladas = todasAsPeladas.length;
-        const totalGols = todasAsPeladas.reduce((sum, pelada) => sum + pelada.goals, 0);
-        const totalAssistencias = todasAsPeladas.reduce((sum, pelada) => sum + pelada.assists, 0);
-        const golsEsteMes = peladasEsteMes.reduce((sum, pelada) => sum + pelada.goals, 0);
-        const assistenciasEsteMes = peladasEsteMes.reduce((sum, pelada) => sum + pelada.assists, 0);
+        const totalGols = todasAsPeladas.reduce((sum: any, pelada: any) => sum + pelada.goals, 0);
+        const totalAssistencias = todasAsPeladas.reduce((sum: any, pelada: any) => sum + pelada.assists, 0);
+        const golsEsteMes = peladasEsteMes.reduce((sum: any, pelada: any) => sum + pelada.goals, 0);
+        const assistenciasEsteMes = peladasEsteMes.reduce((sum: any, pelada: any) => sum + pelada.assists, 0);
 
         const notaMedia = totalPeladas > 0
-            ? todasAsPeladas.reduce((sum, pelada) => sum + pelada.rating, 0) / totalPeladas
+            ? todasAsPeladas.reduce((sum: any, pelada: any) => sum + pelada.rating, 0) / totalPeladas
             : 5.0;
 
         // Peladas recentes (últimas 5)

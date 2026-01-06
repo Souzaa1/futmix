@@ -56,10 +56,10 @@ export async function GET(request: NextRequest) {
                 period: format(month, "MMM/yyyy", { locale: ptBR }),
                 month: format(month, "yyyy-MM"),
                 rating: statsInMonth.length > 0
-                    ? statsInMonth.reduce((sum, s) => sum + s.rating, 0) / statsInMonth.length
+                    ? statsInMonth.reduce((sum: any, s: any) => sum + s.rating, 0) / statsInMonth.length
                     : 0,
-                goals: statsInMonth.reduce((sum, s) => sum + s.goals, 0),
-                assists: statsInMonth.reduce((sum, s) => sum + s.assists, 0),
+                goals: statsInMonth.reduce((sum: any, s: any) => sum + s.goals, 0),
+                assists: statsInMonth.reduce((sum: any, s: any) => sum + s.assists, 0),
                 peladas: statsInMonth.length
             };
         }).filter((item: any) => item.peladas > 0);
@@ -82,15 +82,15 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        Object.keys(byPosition).forEach(pos => {
+        Object.keys(byPosition).forEach((pos: any) => {
             const posKey = pos as keyof typeof byPosition;
             if (byPosition[posKey].count > 0) {
                 const statsInPosition = playerStats.filter((s: any) => s.position === pos);
-                byPosition[posKey].avgRating = statsInPosition.reduce((sum, s) => sum + s.rating, 0) / statsInPosition.length;
+                byPosition[posKey].avgRating = statsInPosition.reduce((sum: any, s: any) => sum + s.rating, 0) / statsInPosition.length;
             }
         });
 
-        const byPelada = playerStats.map(stat => ({
+        const byPelada = playerStats.map((stat: any) => ({
             id: stat.pelada.id,
             name: stat.pelada.name,
             date: stat.pelada.date.toISOString(),
@@ -102,18 +102,18 @@ export async function GET(request: NextRequest) {
         }));
 
         // Rankings
-        const ratings = playerStats.map(s => s.rating);
-        const goals = playerStats.map(s => s.goals);
-        const assists = playerStats.map(s => s.assists);
+        const ratings = playerStats.map((s: any) => s.rating);
+        const goals = playerStats.map((s: any) => s.goals);
+        const assists = playerStats.map((s: any) => s.assists);
 
         const rankings = {
             bestRating: ratings.length > 0 ? Math.max(...ratings) : 0,
             worstRating: ratings.length > 0 ? Math.min(...ratings) : 0,
             bestGoals: goals.length > 0 ? Math.max(...goals) : 0,
             bestAssists: assists.length > 0 ? Math.max(...assists) : 0,
-            avgRating: ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0,
-            totalGoals: goals.reduce((a, b) => a + b, 0),
-            totalAssists: assists.reduce((a, b) => a + b, 0),
+            avgRating: ratings.length > 0 ? ratings.reduce((a: any, b: any) => a + b, 0) / ratings.length : 0,
+            totalGoals: goals.reduce((a: any, b: any) => a + b, 0),
+            totalAssists: assists.reduce((a: any, b: any) => a + b, 0),
             totalPeladas: playerStats.length,
         };
 
@@ -143,9 +143,9 @@ export async function GET(request: NextRequest) {
             }
             return {
                 peladas: stats.length,
-                avgRating: stats.reduce((sum, s) => sum + s.rating, 0) / stats.length,
-                totalGoals: stats.reduce((sum, s) => sum + s.goals, 0),
-                totalAssists: stats.reduce((sum, s) => sum + s.assists, 0),
+                avgRating: stats.reduce((sum: any, s: any) => sum + s.rating, 0) / stats.length,
+                totalGoals: stats.reduce((sum: any, s: any) => sum + s.goals, 0),
+                totalAssists: stats.reduce((sum: any, s: any) => sum + s.assists, 0),
             };
         };
 

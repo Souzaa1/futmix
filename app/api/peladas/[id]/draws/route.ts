@@ -293,7 +293,7 @@ export async function POST(
                             ? manualTeams[index].color
                             : TEAM_COLORS[index % TEAM_COLORS.length];
 
-                        const totalRating = teamPlayers.reduce((sum, p) => sum + p.rating, 0);
+                        const totalRating = teamPlayers.reduce((sum: any, p: any) => sum + p.rating, 0);
                         const averageRating = teamPlayers.length > 0 ? totalRating / teamPlayers.length : 0;
 
                         return {
