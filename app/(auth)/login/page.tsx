@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react";
-import { signIn } from "@/lib/auth-client";
+import Image from "next/image";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { signIn } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -21,9 +23,9 @@ const signInSchema = z.object({
 type SignInSchema = z.infer<typeof signInSchema>
 
 export default function LoginPage() {
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const router = useRouter()
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const form = useForm<SignInSchema>({
         resolver: zodResolver(signInSchema),
@@ -51,20 +53,6 @@ export default function LoginPage() {
         }
     }
 
-    const handleGoogleSignIn = async () => {
-        setLoading(true)
-        setError(null)
-        try {
-            await signIn.social({
-                provider: "google",
-            })
-        } catch (error) {
-            console.error("Google auth error:", error)
-            setError("Erro ao fazer login com Google. Tente novamente.")
-        } finally {
-            setLoading(false)
-        }
-    }
 
     return (
         <div className="min-h-screen flex items-center justify-center relative p-4 bg-zinc-900">
