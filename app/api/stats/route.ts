@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         });
 
         // Processar as peladas para o formato esperado
-        const todasAsPeladas = peladasRelacionadas.map(pelada => {
+        const todasAsPeladas = peladasRelacionadas.map((pelada: any) => {
             const playerStat = pelada.players[0]; // Se o usuário participou, pegar suas estatísticas
 
             return {
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
             : 5.0;
 
         // Peladas recentes (últimas 5)
-        const peladasRecentes = todasAsPeladas.slice(0, 5).map(pelada => ({
+        const peladasRecentes = todasAsPeladas.slice(0, 5).map((pelada: any) => ({
             id: pelada.id,
             name: pelada.name,
             date: pelada.date.toISOString(),

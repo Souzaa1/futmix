@@ -126,7 +126,7 @@ export function useDraws(peladaId: string) {
             }
 
             const updatedDraw = await response.json()
-            setDraws(prev => prev.map(d => ({
+            setDraws((prev: any) => prev.map((d: any) => ({
                 ...d,
                 isActive: d.id === drawId
             })))
@@ -148,7 +148,7 @@ export function useDraws(peladaId: string) {
                 throw new Error("Failed to delete draw")
             }
 
-            setDraws(prev => prev.filter((d: any) => d.id !== drawId))
+            setDraws((prev: any) => prev.filter((d: any) => d.id !== drawId))
             if (activeDraw?.id === drawId) {
                 setActiveDrawState(null)
             }

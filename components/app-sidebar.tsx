@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu className="gap-2">
-            {navigationItems.map((item) => {
+            {navigationItems.map((item: any) => {
               const isActive = pathname === item.url || pathname?.startsWith(item.url + "/")
               const Icon = item.icon
 

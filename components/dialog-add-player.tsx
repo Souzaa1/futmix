@@ -66,7 +66,7 @@ export default function DialogAddPlayer({ showImportDialog, setShowImportDialog,
                                     <p className="text-[10px] mt-1">Cole uma lista com sessões "GOLEIROS" e "LINHA".</p>
                                 </div>
                             ) : (
-                                parsedPlayers.map((player, idx) => (
+                                parsedPlayers.map((player: any, idx: number) => (
                                     <div key={idx} className="flex items-center justify-between bg-white px-3 py-2 rounded-sm border border-zinc-100 space-y-2">
                                         <div className="flex flex-col items-start justify-start gap-1">
                                             <span className="font-medium text-zinc-700 text-xs truncate flex-1">{player.name}</span>

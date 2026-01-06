@@ -204,7 +204,7 @@ export default function SorteioPage() {
             <DialogSortTeams
                 open={showConfigDialog}
                 onOpenChange={setShowConfigDialog}
-                activePlayers={activePlayers.map(p => ({
+                activePlayers={activePlayers.map((p: any) => ({
                     id: p.id,
                     rating: p.rating,
                     position: p.position,

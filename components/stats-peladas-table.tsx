@@ -119,7 +119,7 @@ export function StatsPeladasTable({ peladas }: StatsPeladasTableProps) {
                                 </td>
                             </tr>
                         ) : (
-                            filteredPeladas.map((pelada) => (
+                            filteredPeladas.map((pelada: any) => (
                                 <tr key={pelada.id} className="hover:bg-zinc-50/50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">

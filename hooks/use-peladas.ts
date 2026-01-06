@@ -89,7 +89,7 @@ export function usePeladas(initialPage = 1, initialLimit = 10) {
             }
 
             const newPelada = await response.json()
-            setPeladas(prev => [newPelada, ...prev])
+            setPeladas((prev: any) => [newPelada, ...prev])
             return newPelada
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred")
@@ -112,7 +112,7 @@ export function usePeladas(initialPage = 1, initialLimit = 10) {
             }
 
             const updatedPelada = await response.json()
-            setPeladas(prev => prev.map(p => p.id === id ? updatedPelada : p))
+            setPeladas((prev: any) => prev.map((p: any) => p.id === id ? updatedPelada : p))
             return updatedPelada
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred")
@@ -130,7 +130,7 @@ export function usePeladas(initialPage = 1, initialLimit = 10) {
                 throw new Error("Failed to delete pelada")
             }
 
-            setPeladas(prev => prev.filter((p: any) => p.id !== id))
+            setPeladas((prev: any) => prev.filter((p: any) => p.id !== id))
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred")
             throw err

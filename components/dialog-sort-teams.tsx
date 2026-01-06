@@ -386,7 +386,7 @@ export function DialogSortTeams({
                                                 <span>Goleiros ({goalkeepers.length})</span>
                                             </div>
                                             <div className="grid grid-cols-2 gap-2">
-                                                {goalkeepers.map((player) => (
+                                                {goalkeepers.map((player: any) => (
                                                     <div key={player.id} className="text-sm flex items-center gap-2">
                                                         <span className="font-medium text-yellow-600">{player.rating.toFixed(1)}</span>
                                                         <span className="truncate">
@@ -405,7 +405,7 @@ export function DialogSortTeams({
                                                 <span>Jogadores de Linha ({linePlayers.length})</span>
                                             </div>
                                             <div className="grid grid-cols-2 gap-2">
-                                                {linePlayers.map((player) => (
+                                                {linePlayers.map((player: any) => (
                                                     <div key={player.id} className="text-sm flex items-center gap-2">
                                                         <span className="font-medium text-yellow-600">{player.rating.toFixed(1)}</span>
                                                         <span className="truncate">

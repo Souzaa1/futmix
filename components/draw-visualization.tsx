@@ -41,7 +41,7 @@ const getMethodLabel = (method: string) => {
 const getInitials = (name: string) => {
     return name
         .split(' ')
-        .map(n => n[0])
+        .map((n: any) => n[0])
         .join('')
         .toUpperCase()
         .slice(0, 2)
@@ -188,7 +188,7 @@ export function DrawVisualization({
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {draw.teams.map((team) => (
+                {draw.teams.map((team: any) => (
                     <div
                         key={team.id}
                         className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50/50 shadow-sm"
@@ -205,7 +205,7 @@ export function DrawVisualization({
                         </div>
 
                         <div className="flex-1 space-y-1 p-3">
-                            {team.players.map((player) => {
+                            {team.players.map((player: any) => {
                                 const playerName = player.playerStats.user?.name || player.playerStats.invitedPlayerName || "Jogador"
                                 const PositionIcon = player.position ? POSITION_ICONS[player.position as keyof typeof POSITION_ICONS] : null
                                 const positionLabel = player.position ? POSITION_LABELS[player.position as keyof typeof POSITION_LABELS] : null

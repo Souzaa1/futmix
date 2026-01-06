@@ -120,7 +120,7 @@ export default function PeladasPage() {
                 ) : (
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {peladas.map((pelada) => (
+                            {peladas.map((pelada: any) => (
                                 <div
                                     key={pelada.id}
                                     className="group bg-white rounded-sm border border-zinc-200 p-5 hover:border-emerald-500/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 flex flex-col justify-between h-full"

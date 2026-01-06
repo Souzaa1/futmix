@@ -180,7 +180,7 @@ export default function Home() {
                                 </div>
                             ) : (
                                 <div className="divide-y divide-zinc-100">
-                                    {stats.peladasRecentes.map((pelada) => (
+                                    {stats.peladasRecentes.map((pelada: any) => (
                                         <div key={pelada.id} className="group flex items-center justify-between p-4 hover:bg-zinc-50/50 transition-colors">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-10 h-10 bg-zinc-100 rounded-sm flex items-center justify-center text-zinc-500 group-hover:bg-white group-hover:border group-hover:border-zinc-200 transition-all">

@@ -152,7 +152,7 @@ export default function HistoricoSorteioPage() {
                         </div>
                     ) : (
                         <div className="space-y-6">
-                            {draws.map((draw) => (
+                            {draws.map((draw: any) => (
                                 <DrawVisualization
                                     key={draw.id}
                                     draw={draw}

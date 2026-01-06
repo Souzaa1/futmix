@@ -284,7 +284,7 @@ export async function POST(
                 playersPerTeam,
                 isActive: true,
                 teams: {
-                    create: teamsData.map((teamPlayers, index) => {
+                    create: teamsData.map((teamPlayers: any, index: number) => {
                         const teamName = method === "MANUAL" && manualTeams?.[index]?.name
                             ? manualTeams[index].name
                             : `Time ${String.fromCharCode(65 + index)}`;
@@ -301,7 +301,7 @@ export async function POST(
                             color: teamColor,
                             averageRating,
                             players: {
-                                create: teamPlayers.map((player, playerIndex) => ({
+                                create: teamPlayers.map((player: any, playerIndex: number) => ({
                                     playerStatsId: player.id,
                                     position: method === "MANUAL" && manualTeams?.[index]?.players?.[playerIndex]?.position
                                         ? manualTeams[index].players[playerIndex].position
