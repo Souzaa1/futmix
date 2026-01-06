@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("userId") || session.user.id;
 
-        // Buscar todas as peladas onde o usuário participou (tem playerStats)
         const playerStats = await prisma.playerStats.findMany({
             where: {
                 userId: userId,
@@ -40,7 +39,6 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        // Time Series: Agrupar por mês
         const now = new Date();
         const sixMonthsAgo = subMonths(now, 6);
         const months = eachMonthOfInterval({ start: sixMonthsAgo, end: now });
@@ -64,9 +62,8 @@ export async function GET(request: NextRequest) {
                 assists: statsInMonth.reduce((sum, s) => sum + s.assists, 0),
                 peladas: statsInMonth.length
             };
-        }).filter(item => item.peladas > 0); // Remover meses sem peladas
+        }).filter(item => item.peladas > 0);
 
-        // Por Posição
         const byPosition: Record<string, { count: number; avgRating: number; totalGoals: number; totalAssists: number }> = {
             GOLEIRO: { count: 0, avgRating: 0, totalGoals: 0, totalAssists: 0 },
             ZAGUEIRO: { count: 0, avgRating: 0, totalGoals: 0, totalAssists: 0 },
@@ -85,16 +82,14 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        // Calcular médias por posição
         Object.keys(byPosition).forEach(pos => {
             const posKey = pos as keyof typeof byPosition;
             if (byPosition[posKey].count > 0) {
-                const statsInPosition = playerStats.filter(s => s.position === pos);
+                const statsInPosition = playerStats.filter((s: any) => s.position === pos);
                 byPosition[posKey].avgRating = statsInPosition.reduce((sum, s) => sum + s.rating, 0) / statsInPosition.length;
             }
         });
 
-        // Por Pelada: Lista completa
         const byPelada = playerStats.map(stat => ({
             id: stat.pelada.id,
             name: stat.pelada.name,
@@ -122,18 +117,17 @@ export async function GET(request: NextRequest) {
             totalPeladas: playerStats.length,
         };
 
-        // Comparações: Este mês vs Mês anterior
         const currentMonthStart = startOfMonth(now);
         const currentMonthEnd = endOfMonth(now);
         const lastMonthStart = startOfMonth(subMonths(now, 1));
         const lastMonthEnd = endOfMonth(subMonths(now, 1));
 
-        const thisMonthStats = playerStats.filter(stat => {
+        const thisMonthStats = playerStats.filter((stat: any) => {
             const peladaDate = new Date(stat.pelada.date);
             return peladaDate >= currentMonthStart && peladaDate <= currentMonthEnd;
         });
 
-        const lastMonthStats = playerStats.filter(stat => {
+        const lastMonthStats = playerStats.filter((stat: any) => {
             const peladaDate = new Date(stat.pelada.date);
             return peladaDate >= lastMonthStart && peladaDate <= lastMonthEnd;
         });
