@@ -8,12 +8,16 @@ import { usePathname } from "next/navigation"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import Image from "next/image"
+import { NavUser } from "./nav-user"
+import { useSession } from "@/lib/auth-client"
 
 const navigationItems = [
   {
@@ -29,7 +33,14 @@ const navigationItems = [
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const { data: session } = useSession();
+
+  const user = session?.user ? {
+    name: session.user.name,
+    email: session.user.email,
+    avatar: session.user.image || "/placeholder-user.jpg"
+  } : null;
 
   return (
     <Sidebar variant="floating" {...props}>
@@ -38,9 +49,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
-                <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Trophy className="size-4" />
-                </div>
+                <span className="flex items-center gap-2 border border-emerald-600 rounded-md">
+                  <Image src="/logo.png" alt="Futmix" width={40} height={40} />
+                </span>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">Futmix</span>
                   <span className="text-xs text-muted-foreground">Gerencie suas peladas</span>
@@ -71,6 +82,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        {user && <NavUser user={user} />}
+      </SidebarFooter>
     </Sidebar>
   )
 }

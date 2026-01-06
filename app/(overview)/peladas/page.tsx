@@ -3,22 +3,12 @@
 import { useRole } from "@/hooks/use-role"
 import { usePeladas } from "@/hooks/use-peladas"
 import Link from "next/link"
-import { Calendar, Users, Trophy, Plus, Edit, Trash2, Eye, Clock } from "lucide-react"
+import { Calendar, Users, Plus, Edit, Trash2, Eye, Clock, Loader2, ArrowLeft, ArrowRight } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-    PaginationEllipsis,
-} from "@/components/ui/pagination"
+import { useState } from "react"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -29,7 +19,6 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { useState } from "react"
 
 export default function PeladasPage() {
     const { user, canCreatePelada, isPending: roleLoading } = useRole()
@@ -39,34 +28,26 @@ export default function PeladasPage() {
 
     if (roleLoading || loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center space-y-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-                    <p className="text-lg text-gray-600 font-medium">Carregando peladas...</p>
-                </div>
+            <div className="min-h-screen flex items-center justify-center bg-zinc-50">
+                <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
             </div>
         )
     }
 
     if (!user) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4">
-                <Card className="w-full max-w-md">
-                    <CardHeader className="text-center">
-                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Trophy className="w-8 h-8 text-red-600" />
-                        </div>
-                        <CardTitle className="text-2xl">Acesso Negado</CardTitle>
-                        <CardDescription>
-                            Você precisa estar logado para acessar esta página.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button asChild className="w-full bg-green-600 hover:bg-green-700">
-                            <Link href="/login">Fazer Login</Link>
+            <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-50">
+                <div className="max-w-md w-full bg-white rounded-sm border border-zinc-200 shadow-sm p-8 text-center">
+                    <h1 className="text-xl font-bold text-zinc-900 mb-2">Acesso Restrito</h1>
+                    <p className="text-zinc-500 text-sm mb-6">
+                        Faça login para visualizar as peladas.
+                    </p>
+                    <Link href="/login">
+                        <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-sm">
+                            Fazer Login
                         </Button>
-                    </CardContent>
-                </Card>
+                    </Link>
+                </div>
             </div>
         )
     }
@@ -89,218 +70,169 @@ export default function PeladasPage() {
     }
 
     return (
-        <div className="min-h-full">
+        <div className="min-h-full bg-zinc-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Page Header */}
-                <div className="mb-8">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Peladas</h1>
-                            <p className="text-gray-600">
-                                Gerencie e participe das peladas de futebol
-                            </p>
-                        </div>
-                        {canCreatePelada() && peladas.length > 0 && (
-                            <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
-                                <Link href="/peladas/nova">
-                                    <Plus className="w-5 h-5 mr-2" />
-                                    Nova Pelada
-                                </Link>
-                            </Button>
-                        )}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Peladas</h1>
+                        <p className="text-sm text-zinc-500 mt-1">
+                            Gerencie os jogos organizados na plataforma.
+                        </p>
                     </div>
+                    {canCreatePelada() && (
+                        <Link href="/peladas/nova">
+                            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-sm font-medium h-10 px-4 shadow-sm group">
+                                <Plus className="w-4 h-4 group-hover:rotate-90 transition ease-in-out" />
+                                Nova Pelada
+                            </Button>
+                        </Link>
+                    )}
                 </div>
 
                 {error && (
-                    <Alert variant="destructive" className="mb-6">
+                    <Alert variant="destructive" className="mb-6 rounded-sm border-red-200 bg-red-50 text-red-800">
                         <AlertDescription>{error}</AlertDescription>
                     </Alert>
                 )}
 
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-2xl">Suas Peladas</CardTitle>
-                                <CardDescription className="mt-1">
-                                    {peladas.length > 0
-                                        ? `${peladas.length} pelada${peladas.length > 1 ? 's' : ''} encontrada${peladas.length > 1 ? 's' : ''}`
-                                        : "Nenhuma pelada cadastrada"
-                                    }
-                                </CardDescription>
-                            </div>
+                {peladas.length === 0 ? (
+                    <div className="text-center py-24 bg-white border border-zinc-200 border-dashed rounded-sm">
+                        <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-zinc-100">
+                            <Calendar className="w-8 h-8 text-zinc-300" />
                         </div>
-                    </CardHeader>
+                        <h3 className="text-lg font-semibold text-zinc-900 mb-1">
+                            Nenhuma pelada encontrada
+                        </h3>
+                        <p className="text-sm text-zinc-500 mb-6 max-w-sm mx-auto">
+                            {canCreatePelada()
+                                ? "Crie a primeira pelada para começar a organizar os jogos."
+                                : "Não há jogos disponíveis no momento."
+                            }
+                        </p>
+                        {canCreatePelada() && (
+                            <Link href="/peladas/nova">
+                                <Button variant="outline" className="border-zinc-200 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-sm">
+                                    Criar Primeira Pelada
+                                </Button>
+                            </Link>
+                        )}
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {peladas.map((pelada) => (
+                                <div
+                                    key={pelada.id}
+                                    className="group bg-white rounded-sm border border-zinc-200 p-5 hover:border-emerald-500/30 hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 flex flex-col justify-between h-full"
+                                >
+                                    <div>
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="flex-1 min-w-0 pr-2">
+                                                <h3 className="font-semibold text-zinc-900 truncate leading-tight group-hover:text-emerald-700 transition-colors">
+                                                    {pelada.name}
+                                                </h3>
+                                                <div className="flex items-center gap-1.5 mt-1">
+                                                    <span className={`px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-sm ${pelada.type === 'RECORRENTE'
+                                                            ? 'bg-blue-50 text-blue-700'
+                                                            : 'bg-zinc-100 text-zinc-600'
+                                                        }`}>
+                                                        {pelada.type}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                    <CardContent>
-                        {peladas.length === 0 ? (
-                            <div className="text-center py-16">
-                                <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <Calendar className="w-10 h-10 text-gray-400" />
-                                </div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                    Nenhuma pelada encontrada
-                                </h3>
-                                <p className="text-gray-500 mb-8 max-w-md mx-auto">
-                                    {canCreatePelada()
-                                        ? "Comece criando sua primeira pelada e convide seus amigos para jogar!"
-                                        : "Você ainda não está participando de nenhuma pelada. Aguarde um convite!"
-                                    }
-                                </p>
-                                {canCreatePelada() && (
-                                    <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
-                                        <Link href="/peladas/nova">
-                                            <Plus className="w-5 h-5 mr-2" />
-                                            Criar Primeira Pelada
+                                        <div className="space-y-2 mb-6">
+                                            <div className="flex items-center gap-2 text-sm text-zinc-600">
+                                                <Clock className="w-4 h-4 text-zinc-400" />
+                                                <span>{format(new Date(pelada.date), "dd/MM 'às' HH:mm", { locale: ptBR })}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-zinc-600">
+                                                <Users className="w-4 h-4 text-zinc-400" />
+                                                <span>{pelada._count.players} jogadores</span>
+                                            </div>
+                                            <div className="text-xs text-zinc-400 pt-1">
+                                                Org. por {pelada.createdBy.name.split(' ')[0]}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-4 border-t border-zinc-100 flex items-center justify-between gap-2">
+                                        <Link href={`/peladas/${pelada.id}`} className="flex-1">
+                                            <Button variant="ghost" className="w-full justify-start h-8 px-2 text-zinc-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-sm text-xs font-medium uppercase tracking-wide">
+                                                <Eye className="w-3.5 h-3.5 mr-2" />
+                                                Detalhes
+                                            </Button>
                                         </Link>
-                                    </Button>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {peladas.map((pelada) => (
-                                    <Card key={pelada.id} className="hover:shadow-lg transition-shadow duration-200">
-                                        <CardHeader className="pb-4">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <CardTitle className="text-lg line-clamp-2">{pelada.name}</CardTitle>
-                                                <Badge
-                                                    variant={pelada.type === 'RECORRENTE' ? 'default' : 'secondary'}
-                                                    className={pelada.type === 'RECORRENTE'
-                                                        ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                                                        : 'bg-green-100 text-green-800 hover:bg-green-200'
-                                                    }
+
+                                        {canCreatePelada() && (
+                                            <div className="flex items-center gap-1">
+                                                <Link href={`/peladas/${pelada.id}/editar`}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-sm">
+                                                        <Edit className="w-3.5 h-3.5" />
+                                                    </Button>
+                                                </Link>
+                                                <Button
+                                                    onClick={() => handleDeleteClick(pelada.id)}
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-sm"
                                                 >
-                                                    {pelada.type}
-                                                </Badge>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                <Clock className="w-4 h-4" />
-                                                <span>{format(new Date(pelada.date), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
-                                            </div>
-                                        </CardHeader>
-
-                                        <CardContent className="space-y-4">
-                                            <div className="flex items-center justify-between text-sm">
-                                                <div className="flex items-center gap-2 text-gray-600">
-                                                    <Users className="w-4 h-4" />
-                                                    <span className="font-medium">{pelada._count.players} jogadores</span>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-gray-500 text-xs">
-                                                    <span className="truncate max-w-[120px]">por {pelada.createdBy.name}</span>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex gap-2 pt-2">
-                                                <Button asChild variant="default" size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700">
-                                                    <Link href={`/peladas/${pelada.id}`}>
-                                                        <Eye className="w-4 h-4 mr-1" />
-                                                        Ver
-                                                    </Link>
+                                                    <Trash2 className="w-3.5 h-3.5" />
                                                 </Button>
-                                                {canCreatePelada() && (
-                                                    <>
-                                                        <Button asChild variant="outline" size="sm" className="border-yellow-600 text-yellow-700 hover:bg-yellow-50">
-                                                            <Link href={`/peladas/${pelada.id}/editar`}>
-                                                                <Edit className="w-4 h-4" />
-                                                            </Link>
-                                                        </Button>
-                                                        <Button
-                                                            onClick={() => handleDeleteClick(pelada.id)}
-                                                            variant="outline"
-                                                            size="sm"
-                                                            className="border-red-600 text-red-700 hover:bg-red-50"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </Button>
-                                                    </>
-                                                )}
                                             </div>
-                                        </CardContent>
-                                    </Card>
-                                ))}
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {pagination.totalPages > 1 && (
+                            <div className="flex justify-center pt-8">
+                                <div className="flex items-center gap-1">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => pagination.page > 1 && goToPage(pagination.page - 1)}
+                                        disabled={pagination.page === 1}
+                                        className="h-8 w-8 rounded-sm border-zinc-200 disabled:opacity-30"
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                    </Button>
+                                    <span className="text-xs font-medium text-zinc-500 px-3">
+                                        Página {pagination.page} de {pagination.totalPages}
+                                    </span>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => pagination.page < pagination.totalPages && goToPage(pagination.page + 1)}
+                                        disabled={pagination.page === pagination.totalPages}
+                                        className="h-8 w-8 rounded-sm border-zinc-200 disabled:opacity-30"
+                                    >
+                                        <ArrowRight className="w-4 h-4" />
+                                    </Button>
+                                </div>
                             </div>
                         )}
-                    </CardContent>
-                </Card>
-
-                {/* Paginação */}
-                {pagination.totalPages > 1 && (
-                    <div className="mt-6 flex justify-center">
-                        <Pagination>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        onClick={() => pagination.page > 1 && goToPage(pagination.page - 1)}
-                                        className={pagination.page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    />
-                                </PaginationItem>
-
-                                {[...Array(pagination.totalPages)].map((_, index) => {
-                                    const pageNumber = index + 1;
-                                    const isCurrentPage = pageNumber === pagination.page;
-
-                                    // Mostrar apenas algumas páginas ao redor da página atual
-                                    if (
-                                        pageNumber === 1 ||
-                                        pageNumber === pagination.totalPages ||
-                                        (pageNumber >= pagination.page - 1 && pageNumber <= pagination.page + 1)
-                                    ) {
-                                        return (
-                                            <PaginationItem key={pageNumber}>
-                                                <PaginationLink
-                                                    onClick={() => goToPage(pageNumber)}
-                                                    isActive={isCurrentPage}
-                                                    className="cursor-pointer"
-                                                >
-                                                    {pageNumber}
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                        );
-                                    } else if (
-                                        pageNumber === pagination.page - 2 ||
-                                        pageNumber === pagination.page + 2
-                                    ) {
-                                        return (
-                                            <PaginationItem key={pageNumber}>
-                                                <PaginationEllipsis />
-                                            </PaginationItem>
-                                        );
-                                    }
-                                    return null;
-                                })}
-
-                                <PaginationItem>
-                                    <PaginationNext
-                                        onClick={() => pagination.page < pagination.totalPages && goToPage(pagination.page + 1)}
-                                        className={pagination.page === pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
                     </div>
                 )}
-
-                <div className="text-center text-sm text-muted-foreground mt-4">
-                    Mostrando {peladas.length} de {pagination.total} peladas
-                </div>
             </div>
 
-            {/* Delete Confirmation Dialog */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="rounded-sm border-zinc-200">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                        <AlertDialogTitle>Confirmar exclusão?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Esta ação não pode ser desfeita. A pelada será permanentemente deletada e todos os dados associados serão removidos.
+                            Esta ação não pode ser desfeita. A pelada e todos os dados serão removidos.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel className="rounded-sm border-zinc-200">Cancelar</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleConfirmDelete}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-red-600 hover:bg-red-700 rounded-sm"
                         >
-                            Deletar Pelada
+                            Excluir
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
