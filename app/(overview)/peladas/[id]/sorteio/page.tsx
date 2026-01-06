@@ -34,8 +34,8 @@ export default function SorteioPage() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [drawToDelete, setDrawToDelete] = useState<string | null>(null)
 
-    const pelada = peladas.find(p => p.id === peladaId)
-    const activePlayers = pelada?.players.filter(p => p.isActive && !p.isWaitingList) || []
+    const pelada = peladas.find((p: any) => p.id === peladaId)
+    const activePlayers = pelada?.players.filter((p: any) => p.isActive && !p.isWaitingList) || []
 
     if (peladasLoading || drawsLoading) {
         return (

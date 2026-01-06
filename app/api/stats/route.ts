@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        const peladasEsteMes = todasAsPeladas.filter(pelada =>
+        const peladasEsteMes = todasAsPeladas.filter((pelada: any) =>
             new Date(pelada.date) >= startOfMonth
         );
 

@@ -434,7 +434,7 @@ export default function PeladaDetailPage() {
         }
     }
 
-    const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    const getInitials = (name: string) => name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
     const confirmedPlayers = players.filter((p: any) => (p.user || (!p.user && !p.isInvited)) && !p.isWaitingList)
     const pendingInvites = players.filter((p: any) => p.isInvited && !p.user && !p.isWaitingList)
 

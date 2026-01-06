@@ -25,7 +25,7 @@ export function StatsPeladasTable({ peladas }: StatsPeladasTableProps) {
     const [typeFilter, setTypeFilter] = useState<string>("all")
 
     const filteredPeladas = useMemo(() => {
-        return peladas.filter(pelada => {
+        return peladas.filter((pelada: any) => {
             const matchesSearch = pelada.name.toLowerCase().includes(searchTerm.toLowerCase())
             const matchesPosition = positionFilter === "all" || pelada.position === positionFilter
             const matchesType = typeFilter === "all" || pelada.type === typeFilter

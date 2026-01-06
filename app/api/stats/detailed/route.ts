@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
             const monthStart = startOfMonth(month);
             const monthEnd = endOfMonth(month);
 
-            const statsInMonth = playerStats.filter(stat => {
+            const statsInMonth = playerStats.filter((stat: any) => {
                 const peladaDate = new Date(stat.pelada.date);
                 return peladaDate >= monthStart && peladaDate <= monthEnd;
             });
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
                 assists: statsInMonth.reduce((sum, s) => sum + s.assists, 0),
                 peladas: statsInMonth.length
             };
-        }).filter(item => item.peladas > 0);
+        }).filter((item: any) => item.peladas > 0);
 
         const byPosition: Record<string, { count: number; avgRating: number; totalGoals: number; totalAssists: number }> = {
             GOLEIRO: { count: 0, avgRating: 0, totalGoals: 0, totalAssists: 0 },

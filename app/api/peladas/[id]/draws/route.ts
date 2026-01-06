@@ -14,8 +14,8 @@ const TEAM_COLORS = [
 ];
 
 function separatePlayersByPosition(players: any[]) {
-    const goalkeepers = players.filter(p => p.position === "GOLEIRO")
-    const linePlayers = players.filter(p => p.position !== "GOLEIRO" || !p.position)
+    const goalkeepers = players.filter((p: any) => p.position === "GOLEIRO")
+    const linePlayers = players.filter((p: any) => p.position !== "GOLEIRO" || !p.position)
     return { goalkeepers, linePlayers }
 }
 
@@ -31,7 +31,7 @@ function balancedDraft(
     if (fixedGoalkeepers && linePlayersPerTeam > 0) {
         const { goalkeepers, linePlayers } = separatePlayersByPosition(players);
 
-        const sortedGoalkeepers = [...goalkeepers].sort((a, b) => b.rating - a.rating);
+        const sortedGoalkeepers = [...goalkeepers].sort((a: any, b: any) => b.rating - a.rating);
         const availableGoalkeepers = goalkeepers.length;
         const teamsWithGoalkeeper = Math.min(availableGoalkeepers, numberOfTeams);
 
@@ -40,7 +40,7 @@ function balancedDraft(
         }
 
 
-        const sortedLinePlayers = [...linePlayers].sort((a, b) => b.rating - a.rating);
+        const sortedLinePlayers = [...linePlayers].sort((a: any, b: any) => b.rating - a.rating);
 
         let linePlayerIndex = 0;
 
@@ -59,7 +59,7 @@ function balancedDraft(
             }
         }
     } else {
-        const sortedPlayers = [...players].sort((a, b) => b.rating - a.rating);
+        const sortedPlayers = [...players].sort((a: any, b: any) => b.rating - a.rating);
         let playerIndex = 0;
         const totalPlayers = numberOfTeams * playersPerTeam;
 
@@ -255,7 +255,7 @@ export async function POST(
             teamsData = manualTeams.map((team: any) =>
                 team.players.map((p: any) =>
                     activePlayers.find((ap: any) => ap.id === p.playerStatsId)
-                ).filter(Boolean)
+                ).filter((b: any) => Boolean(b))
             );
         } else if (method === "AUTO_BALANCED") {
             teamsData = balancedDraft(

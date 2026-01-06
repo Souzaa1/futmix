@@ -35,7 +35,7 @@ const POSITION_CONFIG = {
 }
 
 export function StatsPositionTable({ byPosition }: StatsPositionTableProps) {
-    const positions = Object.entries(byPosition).filter(([_, stats]) => stats.count > 0)
+    const positions = Object.entries(byPosition).filter(([_, stats]: any) => stats.count > 0)
 
     if (positions.length === 0) {
         return (
@@ -53,7 +53,7 @@ export function StatsPositionTable({ byPosition }: StatsPositionTableProps) {
                 </h3>
             </div>
             <div className="divide-y divide-zinc-100">
-                {positions.map(([position, stats]) => {
+                {positions.map(([position, stats]: any) => {
                     const config = POSITION_CONFIG[position as keyof typeof POSITION_CONFIG]
                     const Icon = config?.icon || User
 

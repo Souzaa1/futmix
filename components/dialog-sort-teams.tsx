@@ -47,8 +47,8 @@ export function DialogSortTeams({
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const goalkeepers = activePlayers.filter(p => p.position === "GOLEIRO")
-    const linePlayers = activePlayers.filter(p => p.position !== "GOLEIRO" || !p.position)
+    const goalkeepers = activePlayers.filter((p: any) => p.position === "GOLEIRO")
+    const linePlayers = activePlayers.filter((p: any) => p.position !== "GOLEIRO" || !p.position)
 
     let neededGoalkeepers = 0
     let neededLinePlayers = 0

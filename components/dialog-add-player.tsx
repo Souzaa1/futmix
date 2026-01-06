@@ -124,11 +124,11 @@ export default function DialogAddPlayer({ showImportDialog, setShowImportDialog,
                         {parsedPlayers.length > 0 && (
                             <div className="flex items-center justify-between text-[10px]">
                                 <span className="text-emerald-600 font-medium">
-                                    {parsedPlayers.filter(p => p.position === 'GOLEIRO').length} Goleiros, {parsedPlayers.filter(p => p.position !== 'GOLEIRO' && !p.isWaitingList).length} Linha
+                                    {parsedPlayers.filter((p: any) => p.position === 'GOLEIRO').length} Goleiros, {parsedPlayers.filter((p: any) => p.position !== 'GOLEIRO' && !p.isWaitingList).length} Linha
                                 </span>
-                                {parsedPlayers.filter(p => p.isWaitingList).length > 0 && (
+                                {parsedPlayers.filter((p: any) => p.isWaitingList).length > 0 && (
                                     <span className="text-orange-600 font-medium">
-                                        {parsedPlayers.filter(p => p.isWaitingList).length} em Espera
+                                        {parsedPlayers.filter((p: any) => p.isWaitingList).length} em Espera
                                     </span>
                                 )}
                             </div>

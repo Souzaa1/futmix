@@ -148,7 +148,7 @@ export function useDraws(peladaId: string) {
                 throw new Error("Failed to delete draw")
             }
 
-            setDraws(prev => prev.filter(d => d.id !== drawId))
+            setDraws(prev => prev.filter((d: any) => d.id !== drawId))
             if (activeDraw?.id === drawId) {
                 setActiveDrawState(null)
             }

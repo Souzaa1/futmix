@@ -130,7 +130,7 @@ export function usePeladas(initialPage = 1, initialLimit = 10) {
                 throw new Error("Failed to delete pelada")
             }
 
-            setPeladas(prev => prev.filter(p => p.id !== id))
+            setPeladas(prev => prev.filter((p: any) => p.id !== id))
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred")
             throw err
