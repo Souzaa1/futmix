@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         const sixMonthsAgo = subMonths(now, 6);
         const months = eachMonthOfInterval({ start: sixMonthsAgo, end: now });
 
-        const timeSeries = months.map(month => {
+        const timeSeries = months.map((month: any) => {
             const monthStart = startOfMonth(month);
             const monthEnd = endOfMonth(month);
 
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
             ATACANTE: { count: 0, avgRating: 0, totalGoals: 0, totalAssists: 0 },
         };
 
-        playerStats.forEach(stat => {
+        playerStats.forEach((stat: any) => {
             if (stat.position) {
                 const pos = stat.position as keyof typeof byPosition;
                 if (byPosition[pos]) {
