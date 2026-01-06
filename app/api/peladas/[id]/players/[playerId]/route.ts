@@ -18,7 +18,7 @@ export async function PUT(
         }
 
         const body = await request.json();
-        const { rating, goals, assists, isActive } = body;
+        const { rating, goals, assists, isActive, position, isWaitingList } = body;
 
         // Verificar se o jogador está na pelada (buscar por userId ou id)
         let playerStats = await prisma.playerStats.findFirst({
@@ -48,7 +48,9 @@ export async function PUT(
                 ...(rating !== undefined && { rating }),
                 ...(goals !== undefined && { goals }),
                 ...(assists !== undefined && { assists }),
-                ...(isActive !== undefined && { isActive })
+                ...(isActive !== undefined && { isActive }),
+                ...(position !== undefined && { position }),
+                ...(isWaitingList !== undefined && { isWaitingList })
             },
             include: {
                 user: {

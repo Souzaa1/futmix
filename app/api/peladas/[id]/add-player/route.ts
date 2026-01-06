@@ -18,7 +18,7 @@ export async function POST(
         }
 
         const body = await request.json();
-        const { name, rating, position } = body;
+        const { name, rating, position, isWaitingList } = body;
 
         if (!name) {
             return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -65,7 +65,8 @@ export async function POST(
                 rating: rating,
                 goals: 0,
                 assists: 0,
-                position: position || null
+                position: position || null,
+                isWaitingList: isWaitingList || false
             }
         });
 

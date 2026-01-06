@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-// GET - Obter detalhes de um sorteio específico
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string; drawId: string }> }
@@ -53,7 +52,6 @@ export async function GET(
     }
 }
 
-// PUT - Atualizar sorteio (marcar como ativo/inativo)
 export async function PUT(
     request: NextRequest,
     { params }: { params: Promise<{ id: string; drawId: string }> }
@@ -68,7 +66,6 @@ export async function PUT(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Verificar permissões
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { role: true }
@@ -85,7 +82,6 @@ export async function PUT(
             return NextResponse.json({ error: "isActive must be a boolean" }, { status: 400 });
         }
 
-        // Se estiver ativando este sorteio, desativar os outros
         if (isActive) {
             await prisma.draw.updateMany({
                 where: {

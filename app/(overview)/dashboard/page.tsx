@@ -238,15 +238,6 @@ export default function Home() {
                                     </div>
                                     <span className="text-xs font-medium text-zinc-700 group-hover:text-zinc-900">Estatísticas Detalhadas</span>
                                 </Link>
-                                <Link
-                                    href="/jogadores"
-                                    className="flex items-center gap-3 p-3 bg-white border border-zinc-200 hover:border-emerald-500/50 hover:shadow-sm rounded-sm transition-all group"
-                                >
-                                    <div className="w-8 h-8 bg-zinc-50 rounded-sm flex items-center justify-center group-hover:bg-emerald-50 transition-colors">
-                                        <Users className="w-4 h-4 text-zinc-500 group-hover:text-emerald-600" />
-                                    </div>
-                                    <span className="text-xs font-medium text-zinc-700 group-hover:text-zinc-900">Buscar Jogadores</span>
-                                </Link>
                             </div>
                         </div>
                     </div>

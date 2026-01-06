@@ -42,15 +42,28 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "User already exists with this email" }, { status: 400 });
         }
 
-        // Criar usuário
-        const user = await prisma.user.create({
-            data: {
-                name: invite.name,
+        // Criar usuário usando better-auth
+        const signUpResult = await auth.api.signUpEmail({
+            body: {
                 email: invite.email,
-                password: password, // Em produção, hash a senha
-                role: "PLAYER"
-            }
+                password: password,
+                name: invite.name,
+            },
+            headers: request.headers
         });
+
+        if (!signUpResult || !signUpResult.user) {
+            return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+        }
+
+        // Buscar usuário completo do banco para obter o role
+        const user = await prisma.user.findUnique({
+            where: { id: signUpResult.user.id }
+        });
+
+        if (!user) {
+            return NextResponse.json({ error: "User not found after creation" }, { status: 500 });
+        }
 
         // Atualizar playerStats para vincular ao usuário
         await prisma.playerStats.updateMany({

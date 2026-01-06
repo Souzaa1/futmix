@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -102,6 +101,7 @@ model PlayerStats {
   invitedPlayerName  String?
   isActive           Boolean      @default(true)
   isInvited          Boolean      @default(false)
+  isWaitingList      Boolean      @default(false)
   pelada             Pelada       @relation(fields: [peladaId], references: [id])
   user               User?        @relation(fields: [userId], references: [id])
   teamPlayers        TeamPlayer[]
@@ -147,11 +147,11 @@ model Draw {
 }
 
 model Team {
-  id            String       @id @default(cuid())
+  id            String @id @default(cuid())
   drawId        String
   name          String
   color         String
-  averageRating Float        @default(0)
+  averageRating Float  @default(0)
 
   draw    Draw         @relation(fields: [drawId], references: [id], onDelete: Cascade)
   players TeamPlayer[]
@@ -160,7 +160,7 @@ model Team {
 }
 
 model TeamPlayer {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   teamId        String
   playerStatsId String
   position      Position?

@@ -23,6 +23,7 @@ export interface Pelada {
         position: "GOLEIRO" | "ZAGUEIRO" | "MEIO" | "ATACANTE" | null
         isActive: boolean
         isInvited: boolean
+        isWaitingList: boolean
         invitedPlayerName: string | null
         invitedPlayerEmail: string | null
         user: {

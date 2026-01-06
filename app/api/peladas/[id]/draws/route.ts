@@ -2,45 +2,77 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-// Cores pré-definidas para times
 const TEAM_COLORS = [
-    "#3B82F6", // Azul
-    "#EF4444", // Vermelho
-    "#10B981", // Verde
-    "#F59E0B", // Amarelo
-    "#8B5CF6", // Roxo
-    "#F97316", // Laranja
-    "#EC4899", // Rosa
-    "#06B6D4", // Cyan
+    "#3B82F6",
+    "#EF4444",
+    "#10B981",
+    "#F59E0B",
+    "#8B5CF6",
+    "#F97316",
+    "#EC4899",
+    "#06B6D4",
 ];
 
-// Algoritmo de balanceamento por draft (serpente)
+function separatePlayersByPosition(players: any[]) {
+    const goalkeepers = players.filter(p => p.position === "GOLEIRO")
+    const linePlayers = players.filter(p => p.position !== "GOLEIRO" || !p.position)
+    return { goalkeepers, linePlayers }
+}
+
 function balancedDraft(
     players: any[],
     numberOfTeams: number,
-    playersPerTeam: number
+    playersPerTeam: number,
+    fixedGoalkeepers: boolean = false,
+    linePlayersPerTeam: number = 0
 ) {
-    // Ordenar jogadores por rating (maior para menor)
-    const sortedPlayers = [...players].sort((a, b) => b.rating - a.rating);
-
-    // Criar arrays vazios para cada time
     const teams: any[][] = Array.from({ length: numberOfTeams }, () => []);
 
-    // Distribuir jogadores em modo serpente (draft)
-    let playerIndex = 0;
-    const totalPlayers = numberOfTeams * playersPerTeam;
+    if (fixedGoalkeepers && linePlayersPerTeam > 0) {
+        const { goalkeepers, linePlayers } = separatePlayersByPosition(players);
 
-    for (let round = 0; round < playersPerTeam; round++) {
-        // Se o round é par, vai do primeiro ao último time
-        // Se o round é ímpar, vai do último ao primeiro time (serpente)
-        const teamOrder = round % 2 === 0
-            ? Array.from({ length: numberOfTeams }, (_, i) => i)
-            : Array.from({ length: numberOfTeams }, (_, i) => numberOfTeams - 1 - i);
+        const sortedGoalkeepers = [...goalkeepers].sort((a, b) => b.rating - a.rating);
+        const availableGoalkeepers = goalkeepers.length;
+        const teamsWithGoalkeeper = Math.min(availableGoalkeepers, numberOfTeams);
 
-        for (const teamIndex of teamOrder) {
-            if (playerIndex < totalPlayers && playerIndex < sortedPlayers.length) {
-                teams[teamIndex].push(sortedPlayers[playerIndex]);
-                playerIndex++;
+        for (let i = 0; i < teamsWithGoalkeeper; i++) {
+            teams[i].push(sortedGoalkeepers[i]);
+        }
+
+
+        const sortedLinePlayers = [...linePlayers].sort((a, b) => b.rating - a.rating);
+
+        let linePlayerIndex = 0;
+
+        const totalLinePlayersNeeded = numberOfTeams * linePlayersPerTeam;
+
+        for (let round = 0; round < linePlayersPerTeam; round++) {
+            const teamOrder = round % 2 === 0
+                ? Array.from({ length: numberOfTeams }, (_, i) => i)
+                : Array.from({ length: numberOfTeams }, (_, i) => numberOfTeams - 1 - i);
+
+            for (const teamIndex of teamOrder) {
+                if (linePlayerIndex < totalLinePlayersNeeded && linePlayerIndex < sortedLinePlayers.length) {
+                    teams[teamIndex].push(sortedLinePlayers[linePlayerIndex]);
+                    linePlayerIndex++;
+                }
+            }
+        }
+    } else {
+        const sortedPlayers = [...players].sort((a, b) => b.rating - a.rating);
+        let playerIndex = 0;
+        const totalPlayers = numberOfTeams * playersPerTeam;
+
+        for (let round = 0; round < playersPerTeam; round++) {
+            const teamOrder = round % 2 === 0
+                ? Array.from({ length: numberOfTeams }, (_, i) => i)
+                : Array.from({ length: numberOfTeams }, (_, i) => numberOfTeams - 1 - i);
+
+            for (const teamIndex of teamOrder) {
+                if (playerIndex < totalPlayers && playerIndex < sortedPlayers.length) {
+                    teams[teamIndex].push(sortedPlayers[playerIndex]);
+                    playerIndex++;
+                }
             }
         }
     }
@@ -48,28 +80,48 @@ function balancedDraft(
     return teams;
 }
 
-// Algoritmo de sorteio aleatório
 function randomDraw(
     players: any[],
     numberOfTeams: number,
-    playersPerTeam: number
+    playersPerTeam: number,
+    fixedGoalkeepers: boolean = false,
+    linePlayersPerTeam: number = 0
 ) {
-    // Embaralhar jogadores
-    const shuffled = [...players].sort(() => Math.random() - 0.5);
-
-    // Distribuir em times
     const teams: any[][] = Array.from({ length: numberOfTeams }, () => []);
-    const totalPlayers = numberOfTeams * playersPerTeam;
 
-    for (let i = 0; i < totalPlayers && i < shuffled.length; i++) {
-        const teamIndex = i % numberOfTeams;
-        teams[teamIndex].push(shuffled[i]);
+    if (fixedGoalkeepers && linePlayersPerTeam > 0) {
+        const { goalkeepers, linePlayers } = separatePlayersByPosition(players);
+
+        const shuffledGoalkeepers = [...goalkeepers].sort(() => Math.random() - 0.5);
+        const availableGoalkeepers = goalkeepers.length;
+        const teamsWithGoalkeeper = Math.min(availableGoalkeepers, numberOfTeams);
+
+        for (let i = 0; i < teamsWithGoalkeeper; i++) {
+            teams[i].push(shuffledGoalkeepers[i]);
+        }
+
+        const shuffledLinePlayers = [...linePlayers].sort(() => Math.random() - 0.5);
+
+        let linePlayerIndex = 0;
+        const totalLinePlayersNeeded = numberOfTeams * linePlayersPerTeam;
+
+        for (let i = linePlayerIndex; i < totalLinePlayersNeeded && i < shuffledLinePlayers.length; i++) {
+            const teamIndex = (i - linePlayerIndex) % numberOfTeams;
+            teams[teamIndex].push(shuffledLinePlayers[i]);
+        }
+    } else {
+        const shuffled = [...players].sort(() => Math.random() - 0.5);
+        const totalPlayers = numberOfTeams * playersPerTeam;
+
+        for (let i = 0; i < totalPlayers && i < shuffled.length; i++) {
+            const teamIndex = i % numberOfTeams;
+            teams[teamIndex].push(shuffled[i]);
+        }
     }
 
     return teams;
 }
 
-// GET - Listar todos os sorteios da pelada
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -117,7 +169,6 @@ export async function GET(
     }
 }
 
-// POST - Criar novo sorteio
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -132,7 +183,6 @@ export async function POST(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Verificar permissões
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { role: true }
@@ -143,9 +193,8 @@ export async function POST(
         }
 
         const body = await request.json();
-        const { method, numberOfTeams, playersPerTeam, manualTeams } = body;
+        const { method, numberOfTeams, playersPerTeam, manualTeams, fixedGoalkeepers, linePlayersPerTeam } = body;
 
-        // Validações
         if (!method || !numberOfTeams || !playersPerTeam) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
@@ -158,11 +207,11 @@ export async function POST(
             return NextResponse.json({ error: "É necessário pelo menos 1 jogador por time" }, { status: 400 });
         }
 
-        // Buscar jogadores ativos da pelada
         const activePlayers = await prisma.playerStats.findMany({
             where: {
                 peladaId,
-                isActive: true
+                isActive: true,
+                isWaitingList: false
             },
             include: {
                 user: {
@@ -171,15 +220,27 @@ export async function POST(
             }
         });
 
-        const totalNeededPlayers = numberOfTeams * playersPerTeam;
+        if (fixedGoalkeepers && linePlayersPerTeam) {
+            const { goalkeepers, linePlayers } = separatePlayersByPosition(activePlayers);
+            const availableGoalkeepers = goalkeepers.length;
+            const teamsWithGoalkeeper = Math.min(availableGoalkeepers, numberOfTeams);
+            const missingGoalkeepers = Math.max(0, numberOfTeams - teamsWithGoalkeeper);
+            const neededLinePlayers = numberOfTeams * linePlayersPerTeam;
 
-        if (activePlayers.length < totalNeededPlayers) {
-            return NextResponse.json({
-                error: `Jogadores insuficientes. Necessário: ${totalNeededPlayers}, Disponível: ${activePlayers.length}`
-            }, { status: 400 });
+            if (linePlayers.length < neededLinePlayers) {
+                return NextResponse.json({
+                    error: `Jogadores de linha insuficientes. Necessário: ${neededLinePlayers} jogadores de linha (${numberOfTeams * linePlayersPerTeam} para linha + ${missingGoalkeepers} para completar goleiros), Disponível: ${linePlayers.length}`
+                }, { status: 400 });
+            }
+        } else {
+            const totalNeededPlayers = numberOfTeams * playersPerTeam;
+            if (activePlayers.length < totalNeededPlayers) {
+                return NextResponse.json({
+                    error: `Jogadores insuficientes. Necessário: ${totalNeededPlayers}, Disponível: ${activePlayers.length}`
+                }, { status: 400 });
+            }
         }
 
-        // Desativar sorteios anteriores
         await prisma.draw.updateMany({
             where: {
                 peladaId,
@@ -191,21 +252,29 @@ export async function POST(
         let teamsData: any[][];
 
         if (method === "MANUAL" && manualTeams) {
-            // Sorteio manual (usuário define os times)
             teamsData = manualTeams.map((team: any) =>
                 team.players.map((p: any) =>
                     activePlayers.find(ap => ap.id === p.playerStatsId)
                 ).filter(Boolean)
             );
         } else if (method === "AUTO_BALANCED") {
-            // Sorteio balanceado (draft)
-            teamsData = balancedDraft(activePlayers, numberOfTeams, playersPerTeam);
+            teamsData = balancedDraft(
+                activePlayers,
+                numberOfTeams,
+                playersPerTeam,
+                fixedGoalkeepers || false,
+                linePlayersPerTeam || 0
+            );
         } else {
-            // Sorteio aleatório
-            teamsData = randomDraw(activePlayers, numberOfTeams, playersPerTeam);
+            teamsData = randomDraw(
+                activePlayers,
+                numberOfTeams,
+                playersPerTeam,
+                fixedGoalkeepers || false,
+                linePlayersPerTeam || 0
+            );
         }
 
-        // Criar sorteio
         const draw = await prisma.draw.create({
             data: {
                 peladaId,
@@ -218,7 +287,7 @@ export async function POST(
                     create: teamsData.map((teamPlayers, index) => {
                         const teamName = method === "MANUAL" && manualTeams?.[index]?.name
                             ? manualTeams[index].name
-                            : `Time ${String.fromCharCode(65 + index)}`; // A, B, C...
+                            : `Time ${String.fromCharCode(65 + index)}`;
 
                         const teamColor = method === "MANUAL" && manualTeams?.[index]?.color
                             ? manualTeams[index].color

@@ -28,7 +28,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
             <AppSidebar />
             <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 px-4 border-b bg-white/50 backdrop-blur-sm">
+                <header className="flex h-10 shrink-0 items-center gap-2 px-4 border-b bg-white/50 backdrop-blur-sm">
                     <SidebarTrigger className="-ml-1" />
                     <Separator
                         orientation="vertical"

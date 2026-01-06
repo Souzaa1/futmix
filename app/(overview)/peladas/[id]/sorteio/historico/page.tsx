@@ -6,9 +6,8 @@ import { useRole } from "@/hooks/use-role"
 import { usePeladas } from "@/hooks/use-peladas"
 import { useDraws } from "@/hooks/use-draws"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DrawVisualization } from "@/components/draw-visualization"
-import { ArrowLeft, Calendar } from "lucide-react"
+import { ArrowLeft, Calendar, Loader2, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
 import {
@@ -37,10 +36,10 @@ export default function HistoricoSorteioPage() {
 
     if (peladasLoading || drawsLoading) {
         return (
-            <div className="h-full flex items-center justify-center">
-                <div className="text-center space-y-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
-                    <p className="text-lg text-gray-600 font-medium">Carregando histórico...</p>
+            <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center bg-white">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-zinc-900" />
+                    <span className="text-sm font-medium text-zinc-500">Carregando histórico...</span>
                 </div>
             </div>
         )
@@ -48,20 +47,23 @@ export default function HistoricoSorteioPage() {
 
     if (!pelada) {
         return (
-            <div className="h-full flex items-center justify-center p-4">
-                <Card className="w-full max-w-md">
-                    <CardHeader className="text-center">
-                        <CardTitle>Pelada não encontrada</CardTitle>
-                        <CardDescription>
-                            A pelada que você está procurando não existe ou foi removida.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button asChild className="w-full">
-                            <Link href="/peladas">Voltar às Peladas</Link>
-                        </Button>
-                    </CardContent>
-                </Card>
+            <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center bg-white p-6">
+                <div className="flex w-full max-w-sm flex-col items-center gap-6 text-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50">
+                        <AlertCircle className="h-6 w-6 text-zinc-900" />
+                    </div>
+                    <div className="space-y-2">
+                        <h1 className="text-lg font-bold uppercase tracking-tight text-zinc-900">Pelada não encontrada</h1>
+                        <p className="text-sm text-zinc-500">A pelada que você está procurando não existe ou foi removida.</p>
+                    </div>
+                    <Button
+                        variant="outline"
+                        asChild
+                        className="h-10 w-full border-zinc-200 bg-white text-sm font-medium text-zinc-900 hover:bg-zinc-50"
+                    >
+                        <Link href="/peladas">Voltar às Peladas</Link>
+                    </Button>
+                </div>
             </div>
         )
     }
@@ -103,73 +105,84 @@ export default function HistoricoSorteioPage() {
     }
 
     return (
-        <div className="h-full overflow-y-auto">
-            <div className="px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <div className="flex items-center gap-4 mb-4">
-                        <Button variant="ghost" size="sm" asChild>
-                            <Link href={`/peladas/${peladaId}/sorteio`}>
-                                <ArrowLeft className="w-4 h-4 mr-2" />
-                                Voltar
-                            </Link>
-                        </Button>
-                    </div>
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Histórico de Sorteios</h1>
-                        <p className="text-gray-600">{pelada.name}</p>
+        <div className="flex min-h-[calc(100vh-4rem)] flex-col bg-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <header className="sticky top-0 z-10 border-b border-zinc-100 bg-white px-6 py-4">
+                <div className="mx-auto flex max-w-[1920px] items-center justify-between">
+                    <div className="flex items-center gap-6">
+                        <Link
+                            href={`/peladas/${peladaId}/sorteio`}
+                            className="group flex h-8 w-8 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-900"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                        </Link>
+                        <div className="h-8 w-px bg-zinc-100" />
+                        <div>
+                            <div className="flex items-center gap-3">
+                                <h1 className="text-lg font-bold uppercase tracking-tight text-zinc-900">Histórico</h1>
+                                <span className="bg-zinc-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-zinc-600">
+                                    {pelada.name}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </header>
 
-                {/* Lista de Sorteios */}
-                {draws.length === 0 ? (
-                    <Card>
-                        <CardContent className="py-12">
-                            <div className="text-center">
-                                <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                    Nenhum sorteio realizado
-                                </h3>
-                                <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                                    Esta pelada ainda não possui sorteios. Crie o primeiro sorteio para começar.
-                                </p>
-                                <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
-                                    <Link href={`/peladas/${peladaId}/sorteio`}>
-                                        Ir para Sorteios
-                                    </Link>
-                                </Button>
+            <main className="flex-1 bg-white px-6 py-8">
+                <div className="mx-auto max-w-[1920px]">
+                    {draws.length === 0 ? (
+                        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 p-12">
+                            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-zinc-200 bg-white shadow-sm">
+                                <Calendar className="h-8 w-8 text-zinc-300" />
                             </div>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    <div className="space-y-6">
-                        {draws.map((draw) => (
-                            <DrawVisualization
-                                key={draw.id}
-                                draw={draw}
-                                showActions={canCreatePelada()}
-                                onDelete={handleDeleteClick}
-                                onSetActive={handleActivateClick}
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
+                            <h3 className="mb-2 text-lg font-bold uppercase tracking-tight text-zinc-900">
+                                Nenhum sorteio realizado
+                            </h3>
+                            <p className="mb-8 max-w-md text-center text-sm text-zinc-500">
+                                Esta pelada ainda não possui sorteios registrados.
+                            </p>
+                            <Button
+                                asChild
+                                className="h-10 px-8 text-sm font-semibold uppercase tracking-wide text-white"
+                            >
+                                <Link href={`/peladas/${peladaId}/sorteio`}>
+                                    Voltar para Sorteio
+                                </Link>
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {draws.map((draw) => (
+                                <DrawVisualization
+                                    key={draw.id}
+                                    draw={draw}
+                                    showActions={canCreatePelada()}
+                                    onDelete={handleDeleteClick}
+                                    onSetActive={handleActivateClick}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </main>
 
-            {/* Dialog de Confirmação de Delete */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="border-zinc-200 bg-white p-6 shadow-none sm:max-w-[400px]">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Deletar Sorteio</AlertDialogTitle>
-                        <AlertDialogDescription>
+                        <AlertDialogTitle className="text-lg font-bold uppercase tracking-tight text-zinc-900">
+                            Deletar Sorteio
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm text-zinc-500">
                             Tem certeza que deseja deletar este sorteio? Esta ação não pode ser desfeita.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogFooter className="mt-6 gap-2 sm:gap-0">
+                        <AlertDialogCancel className="h-9 border-zinc-200 bg-white text-xs font-semibold uppercase tracking-wide text-zinc-700 hover:bg-zinc-50">
+                            Cancelar
+                        </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleConfirmDelete}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="h-9 bg-red-600 text-xs font-semibold uppercase tracking-wide text-white hover:bg-red-700"
                         >
                             Deletar
                         </AlertDialogAction>
@@ -177,20 +190,23 @@ export default function HistoricoSorteioPage() {
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Dialog de Confirmação de Ativação */}
             <AlertDialog open={activateDialogOpen} onOpenChange={setActivateDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="border-zinc-200 bg-white p-6 shadow-none sm:max-w-[400px]">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Ativar Sorteio</AlertDialogTitle>
-                        <AlertDialogDescription>
+                        <AlertDialogTitle className="text-lg font-bold uppercase tracking-tight text-zinc-900">
+                            Ativar Sorteio
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm text-zinc-500">
                             Deseja tornar este sorteio o ativo? O sorteio atual será desativado.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogFooter className="mt-6 gap-2 sm:gap-0">
+                        <AlertDialogCancel className="h-9 border-zinc-200 bg-white text-xs font-semibold uppercase tracking-wide text-zinc-700 hover:bg-zinc-50">
+                            Cancelar
+                        </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleConfirmActivate}
-                            className="bg-emerald-600 hover:bg-emerald-700"
+                            className="h-9 bg-emerald-600 text-xs font-semibold uppercase tracking-wide text-white hover:bg-emerald-700"
                         >
                             Ativar
                         </AlertDialogAction>
@@ -200,4 +216,3 @@ export default function HistoricoSorteioPage() {
         </div>
     )
 }
-

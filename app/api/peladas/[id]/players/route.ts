@@ -22,14 +22,21 @@ export async function GET(
         const page = parseInt(searchParams.get("page") || "1");
         const limit = parseInt(searchParams.get("limit") || "10");
         const skip = (page - 1) * limit;
+        const waitingList = searchParams.get("waitingList") === "true";
 
         // Contar total de jogadores
         const totalPlayers = await prisma.playerStats.count({
-            where: { peladaId: id }
+            where: {
+                peladaId: id,
+                isWaitingList: waitingList
+            }
         });
 
         const players = await prisma.playerStats.findMany({
-            where: { peladaId: id },
+            where: {
+                peladaId: id,
+                isWaitingList: waitingList
+            },
             include: {
                 user: {
                     select: { id: true, name: true, email: true }

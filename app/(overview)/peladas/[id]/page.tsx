@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
     Table,
     TableBody,
@@ -54,6 +55,9 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import DialogAddPlayer from "@/components/dialog-add-player"
+import DialogSendInvite from "@/components/dialog-send-invite"
+import DialogEditPlayer from "@/components/dialog-edit-player"
 
 export default function PeladaDetailPage() {
     const params = useParams()
@@ -77,7 +81,8 @@ export default function PeladaDetailPage() {
         goals: 0,
         assists: 0,
         position: "",
-        isActive: true
+        isActive: true,
+        isWaitingList: false
     })
     const [players, setPlayers] = useState<any[]>([])
     const [playersPagination, setPlayersPagination] = useState({
@@ -91,13 +96,15 @@ export default function PeladaDetailPage() {
     // WhatsApp Import State
     const [showImportDialog, setShowImportDialog] = useState(false)
     const [importText, setImportText] = useState("")
-    const [parsedPlayers, setParsedPlayers] = useState<{ name: string, position: string | null }[]>([])
+    const [parsedPlayers, setParsedPlayers] = useState<{ name: string, position: string | null, rating: number, isWaitingList: boolean }[]>([])
     const [isImporting, setIsImporting] = useState(false)
+    const [waitingListPlayers, setWaitingListPlayers] = useState<any[]>([])
+    const [loadingWaitingList, setLoadingWaitingList] = useState(false)
 
     const parseWhatsAppMessage = (text: string) => {
         const lines = text.split('\n')
-        const players: { name: string, position: string | null }[] = []
-        let section: 'GOLEIRO' | 'LINHA' | null = null
+        const players: { name: string, position: string | null, rating: number, isWaitingList: boolean }[] = []
+        let section: 'GOLEIRO' | 'LINHA' | 'WAITING' | null = null
 
         for (const line of lines) {
             const trimLine = line.trim().toUpperCase()
@@ -106,12 +113,16 @@ export default function PeladaDetailPage() {
                 section = 'GOLEIRO'
                 continue
             }
-            if (trimLine.includes("LINHA")) {
+            if (trimLine.includes("LINHA") && !trimLine.includes("ESPERA")) {
                 section = 'LINHA'
                 continue
             }
-            // Stop at other lists
-            if (trimLine.includes("LISTA DE ESPERA") || trimLine.includes("AUSENTES")) {
+            if (trimLine.includes("LISTA DE ESPERA")) {
+                section = 'WAITING'
+                continue
+            }
+            // Stop at ausentes
+            if (trimLine.includes("AUSENTES")) {
                 break
             }
 
@@ -125,7 +136,9 @@ export default function PeladaDetailPage() {
                 if (cleanName.length > 1 && !cleanName.match(/^[0-9]+$/)) {
                     players.push({
                         name: cleanName,
-                        position: section === 'GOLEIRO' ? 'GOLEIRO' : null
+                        position: section === 'GOLEIRO' ? 'GOLEIRO' : null,
+                        rating: 5.0,
+                        isWaitingList: section === 'WAITING'
                     })
                 }
             }
@@ -152,8 +165,9 @@ export default function PeladaDetailPage() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         name: player.name,
-                        rating: 5.0, // Default rating
-                        position: player.position
+                        rating: player.rating,
+                        position: player.position,
+                        isWaitingList: player.isWaitingList
                     }),
                 })
                 if (response.ok) successCount++
@@ -169,7 +183,24 @@ export default function PeladaDetailPage() {
         setImportText("")
         setParsedPlayers([])
         await fetchPlayers(playersPagination.page)
+        await fetchWaitingList()
         await fetchPeladas()
+    }
+
+    const fetchWaitingList = async () => {
+        if (!params.id) return
+        setLoadingWaitingList(true)
+        try {
+            const response = await fetch(`/api/peladas/${params.id}/players?waitingList=true`)
+            if (response.ok) {
+                const data = await response.json()
+                setWaitingListPlayers(data.players)
+            }
+        } catch (error) {
+            console.error("Error fetching waiting list:", error)
+        } finally {
+            setLoadingWaitingList(false)
+        }
     }
 
     const fetchPlayers = async (page = 1) => {
@@ -199,6 +230,7 @@ export default function PeladaDetailPage() {
     useEffect(() => {
         if (params.id) {
             fetchPlayers(1)
+            fetchWaitingList()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params.id])
@@ -332,6 +364,7 @@ export default function PeladaDetailPage() {
                 setDeleteDialogOpen(false)
                 setPlayerToDelete(null)
                 await fetchPlayers(playersPagination.page)
+                await fetchWaitingList()
                 await fetchPeladas()
             } catch (error) {
                 toast.error("Erro ao remover jogador")
@@ -346,7 +379,8 @@ export default function PeladaDetailPage() {
             goals: player.goals,
             assists: player.assists,
             isActive: player.isActive,
-            position: player.position
+            position: player.position,
+            isWaitingList: player.isWaitingList || false
         })
         setShowEditDialog(true)
     }
@@ -370,15 +404,39 @@ export default function PeladaDetailPage() {
             setShowEditDialog(false)
             setEditingPlayer(null)
             await fetchPlayers(playersPagination.page)
+            await fetchWaitingList()
             await fetchPeladas()
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Erro ao atualizar jogador")
         }
     }
 
+    const handleToggleWaitingList = async (player: any, moveToWaiting: boolean) => {
+        try {
+            const playerId = player.user?.id || player.id
+            const response = await fetch(`/api/peladas/${pelada.id}/players/${playerId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isWaitingList: moveToWaiting }),
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(errorData.error || "Erro ao mover jogador")
+            }
+
+            toast.success(moveToWaiting ? "Jogador movido para lista de espera" : "Jogador movido para lista principal")
+            await fetchPlayers(playersPagination.page)
+            await fetchWaitingList()
+            await fetchPeladas()
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Erro ao mover jogador")
+        }
+    }
+
     const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-    const confirmedPlayers = players.filter((p: any) => p.user || (!p.user && !p.isInvited))
-    const pendingInvites = players.filter((p: any) => p.isInvited && !p.user)
+    const confirmedPlayers = players.filter((p: any) => (p.user || (!p.user && !p.isInvited)) && !p.isWaitingList)
+    const pendingInvites = players.filter((p: any) => p.isInvited && !p.user && !p.isWaitingList)
 
     return (
         <div className="min-h-full bg-zinc-50">
@@ -456,10 +514,10 @@ export default function PeladaDetailPage() {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:items-stretch">
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white border border-zinc-200 shadow-sm rounded-sm overflow-hidden">
-                            <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
+                        <div className="bg-white border border-zinc-200 shadow-sm rounded-sm overflow-hidden flex flex-col h-full">
+                            <div className="px-6 py-4 border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center gap-2 justify-between bg-zinc-50/50">
                                 <div>
                                     <h2 className="text-lg font-bold text-zinc-900 tracking-tight">Jogadores</h2>
                                     <p className="text-xs text-zinc-500 mt-0.5">
@@ -541,7 +599,6 @@ export default function PeladaDetailPage() {
                                 </div>
                             )}
 
-                            {/* List */}
                             {loadingPlayers ? (
                                 <div className="p-12 flex justify-center">
                                     <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
@@ -594,7 +651,7 @@ export default function PeladaDetailPage() {
                                                     <TableCell className="text-center py-2">
                                                         <div className="flex items-center justify-center gap-1">
                                                             <span className="text-sm font-medium text-zinc-700">{player.rating.toFixed(1)}</span>
-                                                            <Star className="w-3 h-3 text-zinc-300 fill-zinc-300" />
+                                                            <Star className="w-3 h-3 text-orange-300 fill-orange-300" />
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className="text-center py-2 text-sm text-zinc-600 font-medium">{player.goals}</TableCell>
@@ -628,6 +685,15 @@ export default function PeladaDetailPage() {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
+                                                                className="h-7 w-7 text-zinc-400 hover:text-orange-600 hover:bg-orange-50 rounded-sm"
+                                                                onClick={() => handleToggleWaitingList(player, true)}
+                                                                title="Mover para lista de espera"
+                                                            >
+                                                                <Clock className="w-3.5 h-3.5" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
                                                                 className="h-7 w-7 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-sm"
                                                                 onClick={() => handleRemoveClick(player.user?.id || player.id)}
                                                             >
@@ -642,7 +708,6 @@ export default function PeladaDetailPage() {
                                 </div>
                             )}
 
-                            {/* Pagination */}
                             {playersPagination.totalPages > 1 && (
                                 <div className="border-t border-zinc-100 p-4 flex items-center justify-center">
                                     <div className="flex items-center gap-2">
@@ -671,39 +736,10 @@ export default function PeladaDetailPage() {
                                 </div>
                             )}
                         </div>
-
-                        {/* Pending Invites */}
-                        {pendingInvites.length > 0 && (
-                            <div className="bg-yellow-50/50 border border-yellow-200 rounded-sm p-6">
-                                <h3 className="text-sm font-semibold text-yellow-800 mb-4 flex items-center gap-2">
-                                    <Mail className="w-4 h-4" />
-                                    Convites Pendentes ({pendingInvites.length})
-                                </h3>
-                                <div className="space-y-2">
-                                    {pendingInvites.map((player: any) => (
-                                        <div key={player.id} className="flex items-center justify-between bg-white border border-yellow-100 rounded-sm p-3">
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="h-8 w-8 bg-yellow-100 text-yellow-700 rounded-sm">
-                                                    <AvatarFallback className="text-xs font-bold">{getInitials(player.invitedPlayerName || "?")}</AvatarFallback>
-                                                </Avatar>
-                                                <div>
-                                                    <div className="text-sm font-medium text-zinc-900">{player.invitedPlayerName}</div>
-                                                    <div className="text-xs text-zinc-500">{player.invitedPlayerEmail}</div>
-                                                </div>
-                                            </div>
-                                            <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wide border-yellow-200 text-yellow-700 bg-yellow-50">
-                                                Pendente
-                                            </Badge>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
 
-                    {/* Stats Sidebar */}
-                    <div className="space-y-6">
-                        <div className="bg-white border border-zinc-200 shadow-sm rounded-sm p-6">
+                    <div className="flex flex-col h-full min-h-0">
+                        <div className="bg-white border border-zinc-200 shadow-sm rounded-sm p-6 flex-shrink-0">
                             <h3 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-4">Resumo</h3>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -719,6 +755,10 @@ export default function PeladaDetailPage() {
                                     <span className="text-sm text-zinc-500">Pendentes</span>
                                     <span className="text-sm font-semibold text-yellow-600">{pendingInvites.length}</span>
                                 </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-zinc-500">Lista de Espera</span>
+                                    <span className="text-sm font-semibold text-orange-600">{waitingListPlayers.length}</span>
+                                </div>
                                 <div className="h-px bg-zinc-100" />
                                 <div className="pt-2">
                                     <span className="text-xs text-zinc-400 uppercase tracking-wider font-semibold block mb-1">Organizador</span>
@@ -731,102 +771,101 @@ export default function PeladaDetailPage() {
                                 </div>
                             </div>
                         </div>
+
+                        {waitingListPlayers.length > 0 && (
+                            <div className="bg-white border border-orange-200 shadow-sm rounded-sm flex flex-col flex-1 min-h-0 mt-4">
+                                <div className="px-6 py-4 border-b border-orange-100 flex-shrink-0">
+                                    <h3 className="text-sm font-bold text-orange-900 uppercase tracking-wider flex items-center gap-2">
+                                        <Clock className="w-4 h-4" />
+                                        Lista de Espera ({waitingListPlayers.length})
+                                    </h3>
+                                </div>
+                                <ScrollArea className="flex-1">
+                                    <div className="p-6 space-y-2">
+                                        {waitingListPlayers.map((player: any) => (
+                                            <div key={player.id} className="flex items-center justify-between bg-orange-50 border border-orange-100 rounded-sm p-3">
+                                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                    <Avatar className="h-8 w-8 rounded-sm bg-orange-100 border border-orange-200">
+                                                        <AvatarFallback className="text-[10px] font-bold text-orange-700 bg-transparent rounded-sm">
+                                                            {getInitials(player.user ? player.user.name : player.invitedPlayerName || "?")}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex flex-col min-w-0 flex-1">
+                                                        <span className="text-sm font-semibold text-zinc-700 truncate">
+                                                            {player.user ? player.user.name : player.invitedPlayerName}
+                                                        </span>
+                                                        <div className="flex items-center gap-2 mt-0.5">
+                                                            {player.position && (
+                                                                <span className="text-[10px] font-bold text-orange-600 uppercase">{player.position.substring(0, 3)}</span>
+                                                            )}
+                                                            <div className="flex items-center gap-1">
+                                                                <Star className="w-3 h-3 text-orange-400 fill-orange-400" />
+                                                                <span className="text-xs text-zinc-500">{player.rating.toFixed(1)}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => handleToggleWaitingList(player, false)}
+                                                    className="h-7 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-sm flex-shrink-0"
+                                                >
+                                                    Mover
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </div>
+                        )}
                     </div>
                 </div>
+
+                {pendingInvites.length > 0 && (
+                    <div className="bg-yellow-50/50 border border-yellow-200 rounded-sm p-6 mt-6">
+                        <h3 className="text-sm font-semibold text-yellow-800 mb-4 flex items-center gap-2">
+                            <Mail className="w-4 h-4" />
+                            Convites Pendentes ({pendingInvites.length})
+                        </h3>
+                        <div className="space-y-2">
+                            {pendingInvites.map((player: any) => (
+                                <div key={player.id} className="flex items-center justify-between bg-white border border-yellow-100 rounded-sm p-3">
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-8 w-8 bg-yellow-100 text-yellow-700 rounded-sm">
+                                            <AvatarFallback className="text-xs font-bold">{getInitials(player.invitedPlayerName || "?")}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <div className="text-sm font-medium text-zinc-900">{player.invitedPlayerName}</div>
+                                            <div className="text-xs text-zinc-500">{player.invitedPlayerEmail}</div>
+                                        </div>
+                                    </div>
+                                    <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wide border-yellow-200 text-yellow-700 bg-yellow-50">
+                                        Pendente
+                                    </Badge>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </main>
 
-            <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-                <DialogContent className="max-w-md rounded-sm border-zinc-200">
-                    <DialogHeader>
-                        <DialogTitle>Editar Jogador</DialogTitle>
-                        <DialogDescription>Atualize as estatísticas do jogador.</DialogDescription>
-                    </DialogHeader>
-                    {editingPlayer && (
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase text-zinc-500">Rating</Label>
-                                    <Input
-                                        type="number" step="0.1" min="0" max="10"
-                                        value={editForm.rating}
-                                        onChange={(e) => setEditForm({ ...editForm, rating: Number(e.target.value) })}
-                                        className="rounded-sm"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase text-zinc-500">Posição</Label>
-                                    <Select value={editForm.position} onValueChange={(v) => setEditForm({ ...editForm, position: v })}>
-                                        <SelectTrigger className="rounded-sm">
-                                            <SelectValue placeholder="Selecione" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="GOLEIRO">Goleiro</SelectItem>
-                                            <SelectItem value="ZAGUEIRO">Zagueiro</SelectItem>
-                                            <SelectItem value="MEIO">Meio Campo</SelectItem>
-                                            <SelectItem value="ATACANTE">Atacante</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase text-zinc-500">Gols</Label>
-                                    <Input
-                                        type="number" min="0"
-                                        value={editForm.goals}
-                                        onChange={(e) => setEditForm({ ...editForm, goals: Number(e.target.value) })}
-                                        className="rounded-sm"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase text-zinc-500">Assistências</Label>
-                                    <Input
-                                        type="number" min="0"
-                                        value={editForm.assists}
-                                        onChange={(e) => setEditForm({ ...editForm, assists: Number(e.target.value) })}
-                                        className="rounded-sm"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2 pt-2">
-                                <Label className="text-sm font-medium text-zinc-700">Ativo na pelada?</Label>
-                                <input
-                                    type="checkbox"
-                                    checked={editForm.isActive}
-                                    onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })}
-                                    className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                                />
-                            </div>
-                        </div>
-                    )}
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowEditDialog(false)} className="rounded-sm">Cancelar</Button>
-                        <Button onClick={handleSaveEdit} className="rounded-sm bg-emerald-600 hover:bg-emerald-700">Salvar</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <DialogEditPlayer
+                showEditDialog={showEditDialog}
+                setShowEditDialog={setShowEditDialog}
+                editingPlayer={editingPlayer}
+                editForm={editForm}
+                setEditForm={setEditForm}
+                handleSaveEdit={handleSaveEdit}
+            />
 
-            <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
-                <DialogContent className="max-w-sm rounded-sm border-zinc-200">
-                    <DialogHeader>
-                        <DialogTitle>Convidar Jogador</DialogTitle>
-                        <DialogDescription>Envie um convite por e-mail para este jogador.</DialogDescription>
-                    </DialogHeader>
-                    <div className="py-2">
-                        <Label className="text-xs font-bold uppercase text-zinc-500 mb-1.5 block">E-mail</Label>
-                        <Input
-                            placeholder="email@exemplo.com"
-                            value={newPlayerEmail}
-                            onChange={(e) => setNewPlayerEmail(e.target.value)}
-                            className="rounded-sm"
-                        />
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowInviteDialog(false)} className="rounded-sm">Cancelar</Button>
-                        <Button onClick={handleSendInvite} className="rounded-sm bg-blue-600 hover:bg-blue-700">Enviar Convite</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <DialogSendInvite
+                showInviteDialog={showInviteDialog}
+                setShowInviteDialog={setShowInviteDialog}
+                newPlayerEmail={newPlayerEmail}
+                setNewPlayerEmail={setNewPlayerEmail}
+                handleSendInvite={handleSendInvite}
+            />
 
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                 <AlertDialogContent className="rounded-sm border-zinc-200">
@@ -843,75 +882,16 @@ export default function PeladaDetailPage() {
                 </AlertDialogContent>
             </AlertDialog>
 
-            <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
-                <DialogContent className="max-w-3xl rounded-sm border-zinc-200">
-                    <DialogHeader>
-                        <DialogTitle>Importar do WhatsApp</DialogTitle>
-                        <DialogDescription>Cole a lista de presença abaixo para importar os jogadores automaticamente.</DialogDescription>
-                    </DialogHeader>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase text-zinc-500">Cole a mensagem aqui</Label>
-                            <Textarea
-                                placeholder="PELADA ARENA..."
-                                className="h-[300px] resize-none rounded-sm font-mono text-xs"
-                                value={importText}
-                                onChange={(e) => setImportText(e.target.value)}
-                            />
-                        </div>
-                        <div className="space-y-2 text-end">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-xs font-bold uppercase text-zinc-500">Pré-visualização ({parsedPlayers.length})</Label>
-                            </div>
-                            <div className="h-[300px] border border-zinc-200 rounded-sm bg-zinc-50 p-2 overflow-y-auto space-y-1">
-                                {parsedPlayers.length === 0 ? (
-                                    <div className="h-full flex flex-col items-center justify-center text-zinc-400 text-center p-4">
-                                        <ClipboardPaste className="w-8 h-8 mb-2 opacity-50" />
-                                        <p className="text-xs">Nenhum jogador detectado.</p>
-                                        <p className="text-[10px] mt-1">Cole uma lista com sessões "GOLEIROS" e "LINHA".</p>
-                                    </div>
-                                ) : (
-                                    parsedPlayers.map((player, idx) => (
-                                        <div key={idx} className="flex items-center justify-between bg-white px-2 py-1.5 rounded-sm border border-zinc-100 text-xs">
-                                            <span className="font-medium text-zinc-700 truncate">{player.name}</span>
-                                            {player.position === 'GOLEIRO' ? (
-                                                <span className="text-[9px] font-bold bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-sm uppercase">Goleiro</span>
-                                            ) : (
-                                                <span className="text-[9px] font-bold bg-zinc-100 text-zinc-500 px-1.5 py-0.5 rounded-sm uppercase">Linha</span>
-                                            )}
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                            {parsedPlayers.length > 0 && (
-                                <span className="text-[10px] text-emerald-600 font-medium">
-                                    {parsedPlayers.filter(p => p.position === 'GOLEIRO').length} Goleiros, {parsedPlayers.filter(p => p.position !== 'GOLEIRO').length} Linha
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowImportDialog(false)} className="rounded-sm">Cancelar</Button>
-                        <Button
-                            onClick={handleImportPlayers}
-                            disabled={parsedPlayers.length === 0 || isImporting}
-                            className="rounded-sm bg-emerald-600 hover:bg-emerald-700"
-                        >
-                            {isImporting ? (
-                                <>
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                    Importando...
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="w-3.5 h-3.5" />
-                                    Importar {parsedPlayers.length} Jogadores
-                                </>
-                            )}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <DialogAddPlayer
+                showImportDialog={showImportDialog}
+                setShowImportDialog={setShowImportDialog}
+                importText={importText}
+                setImportText={setImportText}
+                parsedPlayers={parsedPlayers}
+                setParsedPlayers={setParsedPlayers}
+                isImporting={isImporting}
+                handleImportPlayers={handleImportPlayers}
+            />
         </div>
     )
 }
