@@ -19,7 +19,9 @@ export const auth = betterAuth({
         updateAge: 24 * 60 * 60, // 24 hours
         expiresIn: 60 * 60 * 24 * 7, // 7 days
     },
-    trustedOrigins: ["http://localhost:3000"],
+    trustedOrigins: process.env.BETTER_AUTH_URL
+        ? [process.env.BETTER_AUTH_URL, "http://localhost:3000"]
+        : ["http://localhost:3000"],
     plugins: [nextCookies()],
     user: {
         additionalFields: {

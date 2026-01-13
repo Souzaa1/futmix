@@ -43,9 +43,10 @@ export default function LoginPage() {
             })
 
             router.push("/dashboard")
-        } catch (error) {
+        } catch (error: any) {
             console.error("Auth error:", error)
-            setError("Erro ao fazer login. Verifique suas cgreenenciais e tente novamente.")
+            const errorMessage = error?.message || error?.data?.message || "Erro ao fazer login. Verifique suas credenciais e tente novamente."
+            setError(errorMessage)
         } finally {
             setLoading(false)
         }
