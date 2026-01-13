@@ -7,7 +7,7 @@ import { LogIn, UserPlus, Trophy, Calendar, Users, BarChart3 } from "lucide-reac
 
 export default function Home() {
   return (
-    <div className="h-screen w-full overflow-hidden relative bg-zinc-900">
+    <div className="min-h-screen w-full bg-zinc-950 text-zinc-100 font-sans selection:bg-green-500/20">
       <div
         className="absolute inset-0 z-0 opacity-40 bg-cover bg-center bg-no-repeat"
         style={{
@@ -16,117 +16,119 @@ export default function Home() {
       />
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-zinc-950/95 via-zinc-950/90 to-green-950/70" />
 
-      <div className="relative z-10 h-full w-full flex flex-col">
-        <header className="w-full p-6 md:p-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Futmix" width={50} height={50} className="rounded-md" />
-            <span className="text-2xl font-bold text-white">Futmix</span>
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <header className="flex w-full items-center justify-between border-b border-white/5 bg-zinc-950/50 px-4 py-3 backdrop-blur-md sm:px-6 md:px-12 md:py-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Image src="/logo.png" alt="Futmix" width={30} height={30} className="rounded-md" />
+            <span className="text-xl font-bold text-white sm:text-2xl">Futmix</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button
               asChild
               variant="ghost"
-              className="text-white hover:text-green-500 hover:bg-white/10"
+              className="h-8 rounded-none border-b border-transparent px-2 text-[10px] font-medium uppercase tracking-wider text-zinc-400 hover:bg-transparent hover:text-primary sm:h-9 sm:px-4 sm:text-xs"
             >
               <Link href="/login">Entrar</Link>
             </Button>
             <Button
+              variant="default"
               asChild
-              className="bg-gradient-to-r from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white"
+              className="h-8 rounded-sm px-3 text-[10px] font-semibold uppercase tracking-wider text-white sm:h-9 sm:px-6 sm:text-xs"
             >
               <Link href="/register">Cadastre-se</Link>
             </Button>
           </div>
         </header>
 
-        <main className="flex-1 flex items-center justify-center px-6 md:px-12">
-          <div className="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 text-center md:text-left">
-              <div className="space-y-4">
-                <div className="w-16 h-1 bg-green-600 mx-auto md:mx-0" />
-                <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight tracking-tight">
-                  O futebol
+        <main className="flex flex-1 flex-col justify-center px-4 py-8 sm:px-6 sm:py-12 md:px-12">
+          <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-12 sm:gap-16 md:grid-cols-2 lg:gap-24">
+            <div className="flex flex-col justify-center space-y-6 sm:space-y-8 md:space-y-10">
+              <div className="space-y-4 sm:space-y-6">
+                <div className="inline-flex rounded items-center gap-2 border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-primary sm:px-3 sm:py-1 sm:text-xs">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                  Plataforma Oficial
+                </div>
+                <h1 className="text-4xl font-black leading-[0.9] tracking-tighter text-white sm:text-5xl md:text-6xl lg:text-8xl">
+                  FUTEBOL
                   <br />
-                  <span className="text-green-500">organizado.</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-br from-emerald-300 to-emerald-950">
+                    ORGANIZADO
+                  </span>
                 </h1>
-                <p className="text-xl text-zinc-300 leading-relaxed max-w-lg mx-auto md:mx-0">
-                  Organize suas peladas com estilo e profissionalismo. Gerencie jogadores,
-                  sorteie times e acompanhe estatísticas de forma simples e eficiente.
+                <p className="max-w-md text-xs font-medium leading-relaxed text-zinc-500 sm:text-sm">
+                  Gerenciamento profissional de peladas. Controle de estatísticas, sorteio de times e organização de jogadores em uma interface de alta densidade.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                 <Button
+                  variant="default"
                   asChild
-                  size="lg"
-                  className="bg-gradient-to-r from-green-700 to-green-600 hover:from-green-800 hover:to-green-700 text-white text-base px-8 py-6 h-auto"
+                  className="h-11 w-full rounded-sm px-6 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white sm:h-12 sm:w-auto sm:px-8 sm:text-xs"
                 >
-                  <Link href="/register" className="flex items-center gap-2">
-                    <UserPlus className="h-5 w-5" />
-                    Começar agora
+                  <Link href="/register">
+                    Começar
                   </Link>
                 </Button>
                 <Button
                   asChild
-                  size="lg"
                   variant="outline"
-                  className="border-zinc-300 text-white hover:bg-white/10 hover:text-green-500 text-base px-8 py-6 h-auto"
+                  className="h-11 w-full rounded-sm border-zinc-800 bg-transparent px-6 text-[10px] font-bold uppercase tracking-widest text-white hover:bg-transparent hover:text-white sm:h-12 sm:w-auto sm:px-8 sm:text-xs"
                 >
-                  <Link href="/login" className="flex items-center gap-2">
-                    <LogIn className="h-5 w-5" />
-                    Fazer login
+                  <Link href="/login">
+                    Acessar Conta
                   </Link>
                 </Button>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 space-y-3 hover:bg-white/15 transition-colors">
-                <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
-                  <Calendar className="h-6 w-6 text-green-500" />
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="flex flex-col gap-3 border border-white/5 bg-zinc-900/20 p-4 backdrop-blur-sm rounded-sm sm:gap-4 sm:p-6">
+                <Calendar className="h-4 w-4 text-zinc-500 sm:h-5 sm:w-5" />
+                <div className="space-y-1.5 sm:space-y-2">
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-white sm:text-xs">Agenda</h3>
+                  <p className="text-[9px] font-medium leading-relaxed text-zinc-500 sm:text-[10px]">
+                    Cronograma completo e histórico de partidas.
+                  </p>
                 </div>
-                <h3 className="text-white font-semibold text-lg">Peladas</h3>
-                <p className="text-zinc-300 text-sm">
-                  Crie e gerencie suas peladas de forma organizada
-                </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 space-y-3 hover:bg-white/15 transition-colors">
-                <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
-                  <Users className="h-6 w-6 text-green-500" />
+              <div className="flex flex-col gap-3 border border-white/5 bg-zinc-900/20 p-4 backdrop-blur-sm rounded-sm sm:gap-4 sm:p-6">
+                <Users className="h-4 w-4 text-zinc-500 sm:h-5 sm:w-5" />
+                <div className="space-y-1.5 sm:space-y-2">
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-white sm:text-xs">Elenco</h3>
+                  <p className="text-[9px] font-medium leading-relaxed text-zinc-500 sm:text-[10px]">
+                    Gestão detalhada de jogadores e posições.
+                  </p>
                 </div>
-                <h3 className="text-white font-semibold text-lg">Jogadores</h3>
-                <p className="text-zinc-300 text-sm">
-                  Convide e gerencie seus jogadores facilmente
-                </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 space-y-3 hover:bg-white/15 transition-colors">
-                <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
-                  <Trophy className="h-6 w-6 text-green-500" />
+              <div className="flex flex-col gap-3 border border-white/5 bg-zinc-900/20 p-4 backdrop-blur-sm rounded-sm sm:gap-4 sm:p-6">
+                <Trophy className="h-4 w-4 text-zinc-500 sm:h-5 sm:w-5" />
+                <div className="space-y-1.5 sm:space-y-2">
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-white sm:text-xs">Sorteio</h3>
+                  <p className="text-[9px] font-medium leading-relaxed text-zinc-500 sm:text-[10px]">
+                    Algoritmo de balanceamento de times.
+                  </p>
                 </div>
-                <h3 className="text-white font-semibold text-lg">Sorteios</h3>
-                <p className="text-zinc-300 text-sm">
-                  Sorteie times equilibrados automaticamente
-                </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-6 space-y-3 hover:bg-white/15 transition-colors">
-                <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
-                  <BarChart3 className="h-6 w-6 text-green-500" />
+              <div className="flex flex-col gap-3 border border-white/5 bg-zinc-900/20 p-4 backdrop-blur-sm rounded-sm sm:gap-4 sm:p-6">
+                <BarChart3 className="h-4 w-4 text-zinc-500 sm:h-5 sm:w-5" />
+                <div className="space-y-1.5 sm:space-y-2">
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-white sm:text-xs">Dados</h3>
+                  <p className="text-[9px] font-medium leading-relaxed text-zinc-500 sm:text-[10px]">
+                    Métricas de performance individual.
+                  </p>
                 </div>
-                <h3 className="text-white font-semibold text-lg">Estatísticas</h3>
-                <p className="text-zinc-300 text-sm">
-                  Acompanhe o desempenho dos jogadores
-                </p>
               </div>
             </div>
           </div>
         </main>
 
-        <footer className="w-full p-6 border-t border-white/10">
-          <p className="text-center text-zinc-400 text-sm">
-            © 2025 Futmix. Organize suas peladas com profissionalismo.
+        <footer className="border-t border-white/5 py-6 text-center sm:py-8">
+          <p className="text-[9px] font-medium uppercase tracking-widest text-zinc-600 sm:text-[10px]">
+            Futmix © 2025 - Sistema de Gestão Esportiva
           </p>
         </footer>
       </div>
