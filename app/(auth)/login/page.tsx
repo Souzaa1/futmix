@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Image from "next/image";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
@@ -21,7 +21,7 @@ const signInSchema = z.object({
 
 type SignInSchema = z.infer<typeof signInSchema>
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const rawCallback = searchParams.get("callbackUrl");
@@ -223,5 +223,17 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-zinc-900">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-400 border-t-emerald-500" />
+            </div>
+        }>
+            <LoginForm />
+        </Suspense>
     )
 }
