@@ -21,6 +21,7 @@ export interface PositionStats {
 
 export interface PeladaStats {
     id: string
+    peladaId?: string
     name: string
     date: string
     type: string
@@ -28,6 +29,7 @@ export interface PeladaStats {
     goals: number
     assists: number
     position: string | null
+    playerName?: string
 }
 
 export interface Rankings {
@@ -65,6 +67,7 @@ export interface DetailedStats {
     byPelada: PeladaStats[]
     rankings: Rankings
     comparisons: Comparisons
+    view?: "PRESIDENT" | "player"
 }
 
 export function useDetailedStats() {
@@ -79,7 +82,7 @@ export function useDetailedStats() {
         try {
             setLoading(true)
             setError(null)
-            const response = await fetch(`/api/stats/detailed?userId=${session.user.id}`)
+            const response = await fetch("/api/stats/detailed")
 
             if (!response.ok) {
                 throw new Error("Failed to fetch detailed stats")

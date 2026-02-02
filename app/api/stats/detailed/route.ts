@@ -15,13 +15,25 @@ export async function GET(request: NextRequest) {
         }
 
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get("userId") || session.user.id;
+        const userIdParam = searchParams.get("userId");
+
+        // Buscar peladas criadas pelo usuário (PRESIDENT)
+        const managedPeladas = await prisma.pelada.findMany({
+            where: { createdById: session.user.id },
+            select: { id: true }
+        });
+        const managedPeladaIds = managedPeladas.map((p) => p.id);
+        const isPRESIDENT = managedPeladaIds.length > 0;
+
+        // PRESIDENT: stats de todos os jogadores das suas peladas | Jogador: stats do próprio usuário
+        const whereClause = userIdParam
+            ? { userId: userIdParam, isActive: true }
+            : isPRESIDENT
+                ? { peladaId: { in: managedPeladaIds }, isActive: true }
+                : { userId: session.user.id, isActive: true };
 
         const playerStats = await prisma.playerStats.findMany({
-            where: {
-                userId: userId,
-                isActive: true,
-            },
+            where: whereClause,
             include: {
                 pelada: {
                     select: {
@@ -30,6 +42,9 @@ export async function GET(request: NextRequest) {
                         date: true,
                         type: true,
                     }
+                },
+                user: {
+                    select: { name: true }
                 }
             },
             orderBy: {
@@ -91,14 +106,16 @@ export async function GET(request: NextRequest) {
         });
 
         const byPelada = playerStats.map((stat: any) => ({
-            id: stat.pelada.id,
+            id: `${stat.pelada.id}-${stat.id}`,
+            peladaId: stat.pelada.id,
             name: stat.pelada.name,
             date: stat.pelada.date.toISOString(),
             type: stat.pelada.type,
             rating: stat.rating,
             goals: stat.goals,
             assists: stat.assists,
-            position: stat.position
+            position: stat.position,
+            playerName: stat.user?.name || stat.invitedPlayerName || "Convidado"
         }));
 
         // Rankings
@@ -169,6 +186,7 @@ export async function GET(request: NextRequest) {
             byPelada,
             rankings,
             comparisons,
+            view: isPRESIDENT && !userIdParam ? "PRESIDENT" : "player",
         };
 
         return NextResponse.json(detailedStats);

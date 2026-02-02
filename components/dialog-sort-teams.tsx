@@ -135,22 +135,22 @@ export function DialogSortTeams({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-[90vw] md:max-w-[800px] h-[80vh] max-h-[800px] p-0 gap-0 overflow-hidden border-border flex flex-col">
-                <div className="relative bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-200 dark:from-emerald-900/20 dark:via-emerald-900/20 dark:to-emerald-800/20 px-6 py-8 border-b border-border/50 flex-shrink-0">
+            <DialogContent className="w-[calc(100vw-1.5rem)] max-w-[calc(100vw-1.5rem)] sm:max-w-[95vw] md:max-w-[800px] h-[85dvh] sm:h-[80vh] max-h-[800px] p-0 gap-0 overflow-hidden border-border flex flex-col">
+                <div className="relative bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-200 dark:from-emerald-900/20 dark:via-emerald-900/20 dark:to-emerald-800/20 px-4 py-6 sm:px-6 sm:py-8 border-b border-border/50 flex-shrink-0">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.1),transparent_50%)]" />
                     <DialogHeader className="relative space-y-3">
-                        <div className="flex items-center gap-3">
-                            <div className="relative">
+                        <div className="flex items-start sm:items-center gap-3 min-w-0">
+                            <div className="relative flex-shrink-0">
                                 <div className="absolute inset-0 bg-emerald-500/20 dark:bg-emerald-400/20 rounded-full blur-xl animate-pulse" />
-                                <div className="relative size-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-500 dark:from-emerald-600 dark:to-emerald-400 shadow-lg">
-                                    <Trophy className="w-6 h-6 text-white" />
+                                <div className="relative size-10 sm:size-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-500 dark:from-emerald-600 dark:to-emerald-400 shadow-lg">
+                                    <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                                 </div>
                             </div>
-                            <div>
-                                <DialogTitle className="text-2xl font-bold text-foreground">
+                            <div className="min-w-0 flex-1">
+                                <DialogTitle className="md:text-xl sm:text-2xl font-bold text-foreground">
                                     Novo Sorteio de Times
                                 </DialogTitle>
-                                <DialogDescription className="text-sm text-muted-foreground mt-1">
+                                <DialogDescription className="text-xs sm:text-sm text-muted-foreground mt-1">
                                     Configure o sorteio para distribuir os jogadores em times balanceados
                                 </DialogDescription>
                             </div>
@@ -158,9 +158,9 @@ export function DialogSortTeams({
                     </DialogHeader>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+                <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-y-auto">
                     <ScrollArea className="flex-1 min-h-0">
-                        <div className="p-6 space-y-4">
+                        <div className="md:p-4 p-2 sm:p-6 space-y-4 min-w-0">
 
                             <div className="space-y-2">
                                 <Label htmlFor="method">Método de Sorteio</Label>
@@ -176,16 +176,16 @@ export function DialogSortTeams({
                                             <div className="flex flex-col items-start">
                                                 <div className="flex items-center gap-2">
                                                     <Scale className="w-4 h-4" />
-                                                    <span className="font-medium">Balanceado (Recomendado)</span>
+                                                    <span className="font-medium text-xs sm:text-sm">Balanceado (Recomendado)</span>
                                                 </div>
-                                                <span className="text-xs text-muted-foreground">Distribui jogadores por rating em modo draft</span>
+                                                <span className="text-[10px] md:text-xs text-muted-foreground">Distribui jogadores por rating em modo draft</span>
                                             </div>
                                         </SelectItem>
                                         <SelectItem value="AUTO_RANDOM">
                                             <div className="flex flex-col items-start">
                                                 <div className="flex items-center gap-2">
                                                     <Shuffle className="w-4 h-4" />
-                                                    <span className="font-medium">Aleatório</span>
+                                                    <span className="font-medium text-xs sm:text-sm">Aleatório</span>
                                                 </div>
                                                 <span className="text-xs text-muted-foreground">Distribui jogadores aleatoriamente</span>
                                             </div>
@@ -195,12 +195,12 @@ export function DialogSortTeams({
                             </div>
 
                             <div className="space-y-4">
-                                <div className="flex items-center justify-between p-4 bg-zinc-50 rounded-lg border border-zinc-200">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-zinc-50 rounded-lg border border-zinc-200">
                                     <div className="space-y-0.5">
-                                        <Label htmlFor="fixedGoalkeepers" className="text-sm font-medium">
+                                        <Label htmlFor="fixedGoalkeepers" className="text-xs sm:text-sm font-medium">
                                             Goleiros Fixos
                                         </Label>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="text-[10px] md:text-xs text-muted-foreground">
                                             {fixedGoalkeepers
                                                 ? `${goalkeepers.length} goleiro(s) fixo(s) (distribuídos entre os times, completar com linha se necessário)`
                                                 : "Todos os jogadores participam do sorteio (linha pode ir no gol)"}
@@ -213,9 +213,9 @@ export function DialogSortTeams({
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="numberOfTeams">Número de Times</Label>
+                                        <Label htmlFor="numberOfTeams" className="text-xs sm:text-sm">Número de Times</Label>
                                         <Input
                                             id="numberOfTeams"
                                             type="number"
@@ -228,7 +228,9 @@ export function DialogSortTeams({
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="linePlayersPerTeam">
-                                            {fixedGoalkeepers ? "Jogadores de Linha por Time" : "Jogadores por Time"}
+                                            <span className="text-xs sm:text-sm">
+                                                {fixedGoalkeepers ? "Jogadores de Linha por Time" : "Jogadores por Time"}
+                                            </span>
                                         </Label>
                                         <Input
                                             id="linePlayersPerTeam"
@@ -246,9 +248,9 @@ export function DialogSortTeams({
 
                                 {!fixedGoalkeepers && (
                                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                        <div className="flex items-start gap-2">
-                                            <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5" />
-                                            <div className="text-sm">
+                                        <div className="flex items-start gap-2 min-w-0">
+                                            <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                            <div className="text-[10px] md:text-sm">
                                                 <p className="font-medium text-blue-900">
                                                     Jogadores de linha podem ser sorteados como goleiros
                                                 </p>
@@ -262,9 +264,9 @@ export function DialogSortTeams({
 
                                 {fixedGoalkeepers && (
                                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                        <div className="flex items-start gap-2">
-                                            <Shield className="w-4 h-4 text-blue-600 mt-0.5" />
-                                            <div className="text-sm">
+                                        <div className="flex items-start gap-2 min-w-0">
+                                            <Shield className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                            <div className="text-[10px] md:text-sm">
                                                 <p className="font-medium text-blue-900">
                                                     {goalkeepers.length} goleiro(s) fixo(s) serão usados
                                                 </p>
@@ -279,25 +281,25 @@ export function DialogSortTeams({
                                 )}
                             </div>
 
-                            <div className="rounded-lg bg-muted p-4 space-y-3">
+                            <div className="rounded-lg bg-muted p-4 space-y-3 min-w-0 overflow-hidden">
                                 {fixedGoalkeepers ? (
                                     <>
                                         <div className="space-y-2">
-                                            <div className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center justify-between text-[10px] md:text-sm">
                                                 <span className="text-muted-foreground flex items-center gap-2">
                                                     <Shield className="w-4 h-4" />
                                                     Goleiros disponíveis:
                                                 </span>
                                                 <span className="font-semibold">{goalkeepers.length}</span>
                                             </div>
-                                            <div className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center justify-between text-[10px] md:text-sm">
                                                 <span className="text-muted-foreground ml-6">Goleiros fixos:</span>
                                                 <span className="font-semibold text-emerald-600">
                                                     {availableGoalkeepers}
                                                 </span>
                                             </div>
                                             {remainingGoalkeepers > 0 && (
-                                                <div className="flex items-center justify-between text-sm">
+                                                <div className="flex items-center justify-between text-[10px] md:text-sm">
                                                     <span className="text-muted-foreground ml-6">Goleiros de fora:</span>
                                                     <span className="font-semibold text-yellow-600">{remainingGoalkeepers}</span>
                                                 </div>
@@ -305,21 +307,21 @@ export function DialogSortTeams({
                                         </div>
                                         <div className="h-px bg-zinc-200" />
                                         <div className="space-y-2">
-                                            <div className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center justify-between text-[10px] md:text-sm">
                                                 <span className="text-muted-foreground flex items-center gap-2">
                                                     <Users className="w-4 h-4" />
                                                     Jogadores de linha disponíveis:
                                                 </span>
                                                 <span className="font-semibold">{linePlayers.length}</span>
                                             </div>
-                                            <div className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center justify-between text-[10px] md:text-sm">
                                                 <span className="text-muted-foreground ml-6">Jogadores de linha necessários:</span>
                                                 <span className={`font-semibold ${canCompleteWithLinePlayers ? 'text-emerald-600' : 'text-red-600'}`}>
                                                     {neededLinePlayers}
                                                 </span>
                                             </div>
                                             {remainingLinePlayers > 0 && (
-                                                <div className="flex items-center justify-between text-sm">
+                                                <div className="flex items-center justify-between text-[10px] md:text-sm">
                                                     <span className="text-muted-foreground ml-6">Jogadores de linha de fora:</span>
                                                     <span className="font-semibold text-yellow-600">{remainingLinePlayers}</span>
                                                 </div>
@@ -378,14 +380,14 @@ export function DialogSortTeams({
                             )}
 
                             {activePlayers.length > 0 && (
-                                <div className="border rounded-lg p-3 max-h-40 overflow-y-auto space-y-3">
+                                <div className="border rounded-lg p-3 max-h-40 overflow-y-auto overflow-x-hidden space-y-3 min-w-0">
                                     {goalkeepers.length > 0 && (
                                         <div>
                                             <div className="flex items-center gap-2 mb-2 text-sm font-medium text-muted-foreground">
                                                 <Shield className="w-4 h-4" />
                                                 <span>Goleiros ({goalkeepers.length})</span>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-2">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                 {goalkeepers.map((player: any) => (
                                                     <div key={player.id} className="text-sm flex items-center gap-2">
                                                         <span className="font-medium text-yellow-600">{player.rating.toFixed(1)}</span>
@@ -404,7 +406,7 @@ export function DialogSortTeams({
                                                 <Users className="w-4 h-4" />
                                                 <span>Jogadores de Linha ({linePlayers.length})</span>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-2">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                 {linePlayers.map((player: any) => (
                                                     <div key={player.id} className="text-sm flex items-center gap-2">
                                                         <span className="font-medium text-yellow-600">{player.rating.toFixed(1)}</span>
@@ -421,7 +423,7 @@ export function DialogSortTeams({
                         </div>
                     </ScrollArea>
 
-                    <DialogFooter className="px-4 py-4 border-t border-border bg-zinc-200/30 flex-shrink-0">
+                    <DialogFooter className="px-4 py-4 border-t border-border bg-zinc-200/30 flex-shrink-0 flex-col-reverse sm:flex-row gap-2">
                         <Button
                             type="button"
                             variant="outline"

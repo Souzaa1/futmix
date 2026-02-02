@@ -57,7 +57,9 @@ export default function EstatisticasPage() {
                                 Estatísticas Detalhadas
                             </h1>
                             <p className="text-sm text-zinc-500 mt-1">
-                                Análise completa do seu desempenho
+                                {stats?.view === "PRESIDENT"
+                                    ? "Análise de todos os jogadores das suas peladas"
+                                    : "Análise completa do seu desempenho"}
                             </p>
                         </div>
                     </div>
@@ -155,7 +157,7 @@ export default function EstatisticasPage() {
 
                         {/* Peladas Table */}
                         <div className="mb-8">
-                            <StatsPeladasTable peladas={stats.byPelada} />
+                            <StatsPeladasTable peladas={stats.byPelada} showPlayerColumn={stats.view === "PRESIDENT"} />
                         </div>
                     </>
                 )}
@@ -170,7 +172,9 @@ export default function EstatisticasPage() {
                             Nenhuma estatística disponível
                         </h3>
                         <p className="text-sm text-zinc-500 mb-6 max-w-md mx-auto">
-                            Participe de peladas para começar a gerar estatísticas detalhadas.
+                            {stats.view === "PRESIDENT"
+                                ? "Crie peladas e adicione jogadores para ver as estatísticas."
+                                : "Participe de peladas para começar a gerar estatísticas detalhadas."}
                         </p>
                         <Link
                             href="/peladas"

@@ -155,7 +155,7 @@ export default function SorteioPage() {
                 </div>
             </header>
 
-            <main className="flex-1 bg-white px-6 py-8">
+            <main className="flex-1 bg-white md:px-6 py-8">
                 <div className="mx-auto max-w-[1920px]">
                     {activePlayers.length === 0 && (
                         <div className="mb-6 flex items-center gap-3 border border-amber-200 bg-amber-50 p-4">
@@ -175,7 +175,7 @@ export default function SorteioPage() {
                             />
                         </div>
                     ) : (
-                        <div className="flex rounded-xl min-h-[400px] flex-col items-center justify-center border border-dashed border-zinc-200 bg-zinc-50/50 p-12">
+                        <div className="flex rounded-xl min-h-[400px] flex-col items-center justify-center border border-dashed border-zinc-200 bg-zinc-50/50 md:p-12 p-6">
                             <div className="mb-6 rounded-full flex h-16 w-16 items-center justify-center  border border-zinc-200 bg-white shadow-sm">
                                 <Trophy className="h-8 w-8 text-zinc-300" />
                             </div>

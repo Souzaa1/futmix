@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface StatsPeladasTableProps {
     peladas: PeladaStats[]
+    showPlayerColumn?: boolean
 }
 
 const POSITION_LABELS: Record<string, string> = {
@@ -19,14 +20,18 @@ const POSITION_LABELS: Record<string, string> = {
     ATACANTE: "ATA",
 }
 
-export function StatsPeladasTable({ peladas }: StatsPeladasTableProps) {
+export function StatsPeladasTable({ peladas, showPlayerColumn }: StatsPeladasTableProps) {
+    const hasPlayerNames = showPlayerColumn ?? peladas.some((p) => p.playerName)
     const [searchTerm, setSearchTerm] = useState("")
     const [positionFilter, setPositionFilter] = useState<string>("all")
     const [typeFilter, setTypeFilter] = useState<string>("all")
 
     const filteredPeladas = useMemo(() => {
         return peladas.filter((pelada: any) => {
-            const matchesSearch = pelada.name.toLowerCase().includes(searchTerm.toLowerCase())
+            const searchLower = searchTerm.toLowerCase()
+            const matchesSearch =
+                pelada.name.toLowerCase().includes(searchLower) ||
+                (pelada.playerName?.toLowerCase().includes(searchLower) ?? false)
             const matchesPosition = positionFilter === "all" || pelada.position === positionFilter
             const matchesType = typeFilter === "all" || pelada.type === typeFilter
 
@@ -57,7 +62,7 @@ export function StatsPeladasTable({ peladas }: StatsPeladasTableProps) {
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
                         <Input
-                            placeholder="Buscar pelada..."
+                            placeholder={hasPlayerNames ? "Buscar pelada ou jogador..." : "Buscar pelada..."}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-9 h-9 text-sm"
@@ -94,6 +99,11 @@ export function StatsPeladasTable({ peladas }: StatsPeladasTableProps) {
                             <th className="px-6 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">
                                 Pelada
                             </th>
+                            {hasPlayerNames && (
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">
+                                    Jogador
+                                </th>
+                            )}
                             <th className="px-6 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">
                                 Data
                             </th>
@@ -114,7 +124,7 @@ export function StatsPeladasTable({ peladas }: StatsPeladasTableProps) {
                     <tbody className="divide-y divide-zinc-100">
                         {filteredPeladas.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="px-6 py-8 text-center text-sm text-zinc-500">
+                                <td colSpan={hasPlayerNames ? 7 : 6} className="px-6 py-8 text-center text-sm text-zinc-500">
                                     Nenhuma pelada encontrada
                                 </td>
                             </tr>
@@ -132,6 +142,13 @@ export function StatsPeladasTable({ peladas }: StatsPeladasTableProps) {
                                             {pelada.type === "RECORRENTE" ? "Recorrente" : "Única"}
                                         </span>
                                     </td>
+                                    {hasPlayerNames && (
+                                        <td className="px-6 py-4">
+                                            <span className="text-sm font-medium text-zinc-900">
+                                                {pelada.playerName || "-"}
+                                            </span>
+                                        </td>
+                                    )}
                                     <td className="px-6 py-4">
                                         <span className="text-sm text-zinc-700">
                                             {format(new Date(pelada.date), "dd/MM/yyyy", { locale: ptBR })}

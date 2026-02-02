@@ -10,8 +10,9 @@ import { signIn } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, LogIn } from "lucide-react";
+import { toast } from "sonner";
 
 const signInSchema = z.object({
     email: z.string().email("Por favor, insira um email válido"),
@@ -22,6 +23,9 @@ type SignInSchema = z.infer<typeof signInSchema>
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const rawCallback = searchParams.get("callbackUrl");
+    const callbackUrl = rawCallback?.startsWith("/") ? rawCallback : "/dashboard";
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -41,8 +45,7 @@ export default function LoginPage() {
                 email: data.email,
                 password: data.password,
             })
-
-            router.push("/dashboard")
+            router.push(callbackUrl)
         } catch (error: any) {
             console.error("Auth error:", error)
             const errorMessage = error?.message || error?.data?.message || "Erro ao fazer login. Verifique suas credenciais e tente novamente."
